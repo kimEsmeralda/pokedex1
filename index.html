@@ -1,15 +1,27 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="es">
   <head>
     <meta charset="UTF-8">
     <link rel="icon" href="/favicon.ico">
+    <link rel="manifest" href="/manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vite App</title>
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Pokédex PWA - Gestiona tus pokémon favoritos, crea equipos y batalla con amigos">
+    <title>Pokédex PWA</title>
   </head>
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then((registration) => {
+            console.log('Service Worker registrado:', registration);
+          }).catch((error) => {
+            console.log('Error registrando Service Worker:', error);
+          });
+        });
+      }
+    </script>
   </body>
 </html>
-
-

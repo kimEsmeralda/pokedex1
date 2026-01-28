@@ -1,0 +1,720 @@
+<template>
+  <div class="pokedex-container">
+    <div class="header">
+      <h1>Pokédex</h1>
+      <div class="user-info">
+        <span>{{ authStore.user?.username }}</span>
+        <button @click="logout" class="btn-logout">Logout</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <aside class="sidebar">
+        <div class="filters">
+          <h2>Filtros</h2>
+          <input
+            v-model="searchName"
+            type="text"
+            placeholder="Buscar por nombre..."
+            class="search-input"
+          />
+          <div class="filter-group">
+            <label>Tipo 1</label>
+            <input v-model="filterType1" type="text" placeholder="Water..." />
+          </div>
+          <div class="filter-group">
+            <label>Tipo 2</label>
+            <input v-model="filterType2" type="text" placeholder="Flying..." />
+          </div>
+        </div>
+
+        <nav class="nav-menu">
+          <h2>Menú</h2>
+          <ul>
+            <li :class="{ active: activeTab === 'list' }">
+              <a href="#" @click.prevent="activeTab = 'list'">Pokédex</a>
+            </li>
+            <li :class="{ active: activeTab === 'favorites' }">
+              <a href="#" @click.prevent="activeTab = 'favorites'">
+                Favoritos ({{ userStore.favorites.length }})
+              </a>
+            </li>
+            <li :class="{ active: activeTab === 'teams' }">
+              <a href="#" @click.prevent="activeTab = 'teams'">
+                Equipos ({{ userStore.teams.length }})
+              </a>
+            </li>
+            <li :class="{ active: activeTab === 'friends' }">
+              <a href="#" @click.prevent="activeTab = 'friends'">
+                Amigos ({{ userStore.friends.length }})
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <main class="main-content">
+        <!-- Pokédex List -->
+        <section v-if="activeTab === 'list'" class="pokemon-list">
+          <div class="loading" v-if="pokemonStore.loading">Cargando...</div>
+          <div v-else class="pokemon-grid">
+            <div
+              v-for="pokemon in filteredPokemon"
+              :key="pokemon.name"
+              class="pokemon-card"
+              @click="selectPokemon(pokemon)"
+            >
+              <img
+                :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${getPokemonId(pokemon.url)}.png`"
+                :alt="pokemon.name"
+              />
+              <h3>{{ pokemon.name }}</h3>
+              <button
+                @click.stop="toggleFavorite(pokemon)"
+                class="btn-fav"
+                :class="{ active: isFavorite(pokemon) }"
+              >
+                ♥
+              </button>
+            </div>
+          </div>
+          <div v-if="selectedPokemon" class="pokemon-details-modal" @click.self="selectedPokemon = null">
+            <div class="modal-content">
+              <button @click="selectedPokemon = null" class="btn-close">✕</button>
+              <div class="details">
+                <img
+                  :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${getPokemonId(selectedPokemon.url)}.png`"
+                  :alt="selectedPokemon.name"
+                />
+                <h2>{{ selectedPokemon.name }}</h2>
+                <p v-if="pokemonDetails">
+                  Stats: ATK {{ pokemonDetails.basic?.stats[1]?.base_stat || 0 }} / DEF
+                  {{ pokemonDetails.basic?.stats[2]?.base_stat || 0 }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Favorites -->
+        <section v-if="activeTab === 'favorites'" class="favorites-section">
+          <h2>Pokémon Favoritos</h2>
+          <div v-if="userStore.favorites.length === 0" class="empty">
+            No tienes favoritos aún
+          </div>
+          <div v-else class="pokemon-grid">
+            <div
+              v-for="fav in userStore.favorites"
+              :key="fav.id"
+              class="pokemon-card"
+            >
+              <img
+                :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${fav.pokemonId}.png`"
+                :alt="fav.pokemonName"
+              />
+              <h3>{{ fav.pokemonName }}</h3>
+              <button @click="userStore.removeFavorite(fav.pokemonId)" class="btn-remove">
+                Quitar
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Teams -->
+        <section v-if="activeTab === 'teams'" class="teams-section">
+          <div class="teams-header">
+            <h2>Equipos</h2>
+            <button @click="showTeamForm = !showTeamForm" class="btn-create">
+              + Crear Equipo
+            </button>
+          </div>
+
+          <div v-if="showTeamForm" class="team-form">
+            <input v-model="newTeam.name" placeholder="Nombre del equipo" />
+            <input v-model="newTeam.description" placeholder="Descripción" />
+            <button @click="createTeam">Crear</button>
+            <button @click="showTeamForm = false" class="btn-cancel">Cancelar</button>
+          </div>
+
+          <div v-if="userStore.teams.length === 0" class="empty">
+            No tienes equipos aún
+          </div>
+          <div v-else class="teams-list">
+            <div v-for="team in userStore.teams" :key="team.id" class="team-card">
+              <h3>{{ team.name }}</h3>
+              <p v-if="team.description">{{ team.description }}</p>
+              <p class="pokemon-count">{{ team.pokemon?.length || 0 }}/6 Pokémon</p>
+              <div class="team-actions">
+                <button @click="selectTeam(team)" class="btn-manage">Administrar</button>
+                <button @click="userStore.deleteTeam(team.id)" class="btn-delete">Eliminar</button>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="selectedTeamForManage" class="team-manage-modal" @click.self="selectedTeamForManage = null">
+            <div class="modal-content">
+              <button @click="selectedTeamForManage = null" class="btn-close">✕</button>
+              <h2>{{ selectedTeamForManage.name }}</h2>
+              <div class="team-pokemon">
+                <div v-for="(p, idx) in selectedTeamForManage.pokemon" :key="idx" class="team-pokemon-item">
+                  <span>{{ p.pokemonName }}</span>
+                  <button @click="userStore.removePokemonFromTeam(selectedTeamForManage.id, p.id)">
+                    Quitar
+                  </button>
+                </div>
+              </div>
+              <div v-if="(selectedTeamForManage.pokemon?.length || 0) < 6" class="add-pokemon">
+                <input v-model="pokemonToAdd" placeholder="ID del Pokémon" type="number" />
+                <button @click="addPokemonToSelectedTeam">Agregar</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Friends -->
+        <section v-if="activeTab === 'friends'" class="friends-section">
+          <div class="friends-header">
+            <h2>Amigos</h2>
+            <button @click="showFriendForm = !showFriendForm" class="btn-create">
+              + Agregar Amigo
+            </button>
+          </div>
+
+          <div v-if="showFriendForm" class="friend-form">
+            <input
+              v-model="friendCode"
+              placeholder="Código de amigo"
+              @keyup.enter="addFriend"
+            />
+            <button @click="addFriend">Agregar</button>
+            <button @click="showFriendForm = false" class="btn-cancel">Cancelar</button>
+          </div>
+
+          <div class="generate-code">
+            <p>Tu código: {{ myCode }}</p>
+            <button v-if="!myCode" @click="generateMyCode" class="btn-generate">
+              Generar Código
+            </button>
+          </div>
+
+          <div v-if="userStore.friends.length === 0" class="empty">
+            No tienes amigos aún
+          </div>
+          <div v-else class="friends-list">
+            <div v-for="friend in userStore.friends" :key="friend.id" class="friend-card">
+              <h3>{{ friend.username }}</h3>
+              <p>{{ friend.email }}</p>
+              <button @click="goToBattle(friend)" class="btn-battle">Batallar</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../stores/authStore.js";
+import { usePokemonStore } from "../stores/pokemonStore.js";
+import { useUserStore } from "../stores/userStore.js";
+
+const router = useRouter();
+const authStore = useAuthStore();
+const pokemonStore = usePokemonStore();
+const userStore = useUserStore();
+
+const activeTab = ref("list");
+const searchName = ref("");
+const filterType1 = ref("");
+const filterType2 = ref("");
+const selectedPokemon = ref(null);
+const pokemonDetails = ref(null);
+const showTeamForm = ref(false);
+const showFriendForm = ref(false);
+const selectedTeamForManage = ref(null);
+const pokemonToAdd = ref("");
+const myCode = ref("");
+const friendCode = ref("");
+
+const newTeam = ref({
+  name: "",
+  description: "",
+});
+
+onMounted(async () => {
+  await pokemonStore.fetchPokemonList();
+  await userStore.fetchFavorites();
+  await userStore.fetchTeams();
+  await userStore.fetchFriends();
+});
+
+function logout() {
+  authStore.logout();
+  router.push("/auth");
+}
+
+function getPokemonId(url) {
+  return url.split("/").filter(Boolean).pop();
+}
+
+function isFavorite(pokemon) {
+  const id = getPokemonId(pokemon.url);
+  return userStore.favorites.some((f) => f.pokemonId === parseInt(id));
+}
+
+async function toggleFavorite(pokemon) {
+  const id = getPokemonId(pokemon.url);
+  if (isFavorite(pokemon)) {
+    await userStore.removeFavorite(id);
+  } else {
+    await userStore.addFavorite(id, pokemon.name);
+  }
+}
+
+async function selectPokemon(pokemon) {
+  selectedPokemon.value = pokemon;
+  try {
+    const details = await pokemonStore.fetchPokemonDetails(
+      getPokemonId(pokemon.url)
+    );
+    pokemonDetails.value = details;
+  } catch (error) {
+    console.error("Error loading details:", error);
+  }
+}
+
+async function createTeam() {
+  if (newTeam.value.name) {
+    await userStore.createTeam(newTeam.value.name, newTeam.value.description);
+    newTeam.value = { name: "", description: "" };
+    showTeamForm.value = false;
+  }
+}
+
+function selectTeam(team) {
+  selectedTeamForManage.value = team;
+}
+
+async function addPokemonToSelectedTeam() {
+  if (pokemonToAdd.value && selectedTeamForManage.value) {
+    await userStore.addPokemonToTeam(
+      selectedTeamForManage.value.id,
+      parseInt(pokemonToAdd.value),
+      `Pokemon-${pokemonToAdd.value}`
+    );
+    pokemonToAdd.value = "";
+  }
+}
+
+async function generateMyCode() {
+  try {
+    myCode.value = await userStore.generateFriendCode();
+  } catch (error) {
+    alert("Error generando código: " + error);
+  }
+}
+
+async function addFriend() {
+  if (friendCode.value) {
+    try {
+      await userStore.addFriendByCode(friendCode.value);
+      friendCode.value = "";
+      showFriendForm.value = false;
+    } catch (error) {
+      alert("Error agregando amigo: " + error);
+    }
+  }
+}
+
+function goToBattle(friend) {
+  router.push(`/battle/${friend.id}`);
+}
+
+const filteredPokemon = computed(() => {
+  return pokemonStore.pokemonList.filter((p) => {
+    const nameMatch = p.name.includes(searchName.value.toLowerCase());
+    return nameMatch;
+  });
+});
+</script>
+
+<style scoped>
+.pokedex-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: rgba(0, 0, 0, 0.1);
+  color: white;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-logout {
+  padding: 0.5rem 1rem;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.content {
+  display: flex;
+  height: calc(100vh - 80px);
+}
+
+.sidebar {
+  width: 250px;
+  background: white;
+  padding: 2rem;
+  overflow-y: auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.filters,
+.nav-menu {
+  margin-bottom: 2rem;
+}
+
+.filters h2,
+.nav-menu h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.search-input,
+.filter-group input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.filter-group {
+  margin-bottom: 1rem;
+}
+
+.filter-group label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.nav-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-menu li {
+  margin-bottom: 0.5rem;
+}
+
+.nav-menu a {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: #333;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background 0.3s;
+}
+
+.nav-menu a:hover,
+.nav-menu li.active a {
+  background: #667eea;
+  color: white;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.pokemon-list,
+.favorites-section,
+.teams-section,
+.friends-section {
+  background: white;
+  border-radius: 10px;
+  padding: 2rem;
+}
+
+.pokemon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.pokemon-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s;
+  color: white;
+  position: relative;
+}
+
+.pokemon-card:hover {
+  transform: translateY(-5px);
+}
+
+.pokemon-card img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.pokemon-card h3 {
+  margin: 0.5rem 0;
+  text-transform: capitalize;
+}
+
+.btn-fav {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  color: white;
+  padding: 0.5rem 0.7rem;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.btn-fav.active {
+  background: #e74c3c;
+}
+
+.empty {
+  text-align: center;
+  color: #999;
+  padding: 2rem;
+}
+
+.teams-header,
+.friends-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.btn-create,
+.btn-generate {
+  padding: 0.5rem 1rem;
+  background: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.team-form,
+.friend-form {
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.team-form input,
+.friend-form input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.team-form button,
+.friend-form button {
+  padding: 0.5rem 1rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background: #95a5a6 !important;
+}
+
+.teams-list,
+.friends-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.team-card,
+.friend-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+}
+
+.team-card h3,
+.friend-card h3 {
+  margin: 0 0 0.5rem 0;
+}
+
+.pokemon-count {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
+.team-actions,
+.friend-card button {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.btn-manage,
+.btn-delete,
+.btn-battle,
+.btn-remove {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-manage,
+.btn-battle {
+  background: #3498db;
+  color: white;
+}
+
+.btn-delete,
+.btn-remove {
+  background: #e74c3c;
+  color: white;
+}
+
+.generate-code {
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.pokemon-details-modal,
+.team-manage-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  position: relative;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.btn-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.details {
+  text-align: center;
+}
+
+.details img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+}
+
+.team-pokemon {
+  margin: 1rem 0;
+}
+
+.team-pokemon-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: #f5f5f5;
+  margin-bottom: 0.5rem;
+  border-radius: 5px;
+}
+
+.team-pokemon-item button {
+  padding: 0.3rem 0.7rem;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.add-pokemon {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.add-pokemon input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.add-pokemon button {
+  padding: 0.5rem 1rem;
+  background: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+</style>

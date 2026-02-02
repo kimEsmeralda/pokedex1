@@ -1,12 +1,12 @@
 {
-  "name": "Pokédex PWA",
+  "name": "Pokédex ",
   "short_name": "Pokédex",
   "description": "Aplicación de Pokédex con batallas, equipos y favoritos",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
-  "theme_color": "#667eea",
+  "theme_color": "#D2CEDE",
   "scope": "/",
   "icons": [
     {

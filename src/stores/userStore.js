@@ -10,6 +10,8 @@ export const useUserStore = defineStore('user', () => {
 
   async function addFavorite(pokemonId, pokemonName) {
     try {
+      if (!pokemonId) throw new Error('pokemonId requerido');
+      if (!pokemonName) pokemonName = 'Unknown';
       await favoritesService.add(pokemonId, pokemonName);
       await fetchFavorites();
     } catch (error) {
@@ -19,7 +21,24 @@ export const useUserStore = defineStore('user', () => {
 
   async function removeFavorite(pokemonId) {
     try {
-      await favoritesService.remove(pokemonId);
+      let pid = null;
+      // si es objeto, puede venir con pokemonId (el id del pokemon) o id (pk de la fila)
+      if (typeof pokemonId === 'object') {
+        pid = pokemonId.pokemonId || null;
+        if (!pid && pokemonId.id) {
+          // buscar en favorites el registro con esa fila id
+          const found = favorites.value.find(f => f.id === pokemonId.id);
+          pid = found ? found.pokemonId : null;
+        }
+      } else {
+        pid = pokemonId;
+      }
+
+      if (!pid) {
+        throw new Error('pokemonId requerido para eliminar favorito');
+      }
+
+      await favoritesService.remove(pid);
       await fetchFavorites();
     } catch (error) {
       throw error;

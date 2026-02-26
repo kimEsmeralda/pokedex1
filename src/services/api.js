@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { saveRequest } from '../utils/offlineQueue.js';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -80,3 +81,59 @@ export const pokemonService = {
 };
 
 export default api;
+
+// Interceptor para capturar fallos de red en peticiones no-GET y encolarlas
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    // Sólo manejar si no hay config o es un error de red
+    const config = error.config;
+    const isNetworkError = !navigator.onLine || error.message === 'Network Error' || error.code === 'ERR_NETWORK';
+    if (config && isNetworkError) {
+      const method = (config.method || '').toLowerCase();
+      if (['post', 'put', 'delete', 'patch'].includes(method)) {
+        try {
+          // Construir URL absoluta si es necesario
+          let fullUrl = config.url;
+          try {
+            fullUrl = new URL(config.url, config.baseURL || API_URL).toString();
+          } catch (e) {
+            // keep config.url
+          }
+
+          // Normalizar headers a objeto simple
+          let headers = {};
+          if (config.headers) {
+            if (typeof config.headers.forEach === 'function') {
+              config.headers.forEach((v, k) => { headers[k] = v; });
+            } else if (typeof config.headers === 'object') {
+              headers = { ...config.headers };
+            }
+          }
+
+          const body = typeof config.data === 'string' ? config.data : JSON.stringify(config.data || {});
+
+          await saveRequest({ url: fullUrl, method, headers, body });
+
+          // Registrar sync si es posible
+          if ('serviceWorker' in navigator) {
+            try {
+              const reg = await navigator.serviceWorker.ready;
+              if (reg.sync) {
+                await reg.sync.register('sync-requests');
+              }
+            } catch (e) {
+              // ignore
+            }
+          }
+
+          // Devolver una respuesta simulada para que la app pueda seguir
+          return Promise.resolve({ data: { offlineQueued: true } });
+        } catch (e) {
+          // Fallthrough to reject
+        }
+      }
+    }
+    return Promise.reject(error);
+  }
+);

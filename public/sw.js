@@ -95,3 +95,89 @@ self.addEventListener('fetch', (event) => {
     );
   }
 });
+
+// IndexedDB helper (similar to front-end) para procesar la cola desde el SW
+const DB_NAME = 'outbox-db';
+const STORE_NAME = 'requests';
+const DB_VERSION = 1;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function getAllRequests() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.getAll();
+    req.onsuccess = () => {
+      db.close();
+      resolve(req.result || []);
+    };
+    req.onerror = () => {
+      db.close();
+      reject(req.error);
+    };
+  });
+}
+
+async function deleteRequest(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.delete(id);
+    req.onsuccess = () => {
+      db.close();
+      resolve();
+    };
+    req.onerror = () => {
+      db.close();
+      reject(req.error);
+    };
+  });
+}
+
+async function processQueue() {
+  const entries = await getAllRequests();
+  for (const entry of entries) {
+    try {
+      const headers = entry.headers || {};
+      const options = {
+        method: entry.method.toUpperCase(),
+        headers: headers
+      };
+      if (entry.body) {
+        // body is stored as string
+        options.body = entry.body;
+      }
+
+      const response = await fetch(entry.url, options);
+      if (response && (response.status === 200 || response.status === 201 || response.status === 204)) {
+        await deleteRequest(entry.id);
+      }
+      // If not ok, we leave it for next sync
+    } catch (e) {
+      // network still failing; keep the entry
+    }
+  }
+}
+
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-requests') {
+    event.waitUntil(processQueue());
+  }
+});
+
+

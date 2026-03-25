@@ -86,6 +86,20 @@ export default api;
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
+    // Manejo global de 401: limpiar token/localStorage y redirigir a login
+    if (error.response && error.response.status === 401) {
+      try {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      } catch (e) {}
+      // Intentar redirigir al login para que el usuario vuelva a autenticarse
+      if (typeof window !== 'undefined') {
+        try {
+          window.location.href = '/auth';
+        } catch (e) {}
+      }
+      return Promise.reject(error);
+    }
     // Sólo manejar si no hay config o es un error de red
     const config = error.config;
     const isNetworkError = !navigator.onLine || error.message === 'Network Error' || error.code === 'ERR_NETWORK';

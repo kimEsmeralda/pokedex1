@@ -1,38 +1,40 @@
 .team-manage-modal {
-  width: min(880px, 92%);
-  background: #fff;
-  border-radius: 18px;
-  padding: 20px;
-  box-shadow: 0 8px 30px rgba(2,6,23,0.06);
-  border: 1px solid rgba(15,23,42,0.06);
+  width: min(860px, 94%);
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 18px 40px rgba(2,6,23,0.08);
+  border: 1px solid rgba(15,23,42,0.04);
   transform: translateY(0);
   transition: transform 200ms cubic-bezier(.2,.9,.2,1), opacity 180ms ease;
 }
-.team-header { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
-.team-info h2 { margin:0; font-size:1.35rem; letter-spacing: -0.4px; }
+.team-header { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px; }
+.team-info h2 { margin:0; font-size:1.25rem; letter-spacing: -0.4px; color:#0f172a; }
 .team-meta { color:#6b7280; font-size:0.9rem; }
- .team-body { display:grid; grid-template-columns: 1fr 1fr; gap:24px; align-items:start; }
-.team-slots { display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; width:100%; }
-.team-slot { background:rgba(255,255,255,0.98); border-radius:12px; min-height:120px; display:flex; align-items:center; justify-content:center; position:relative; padding:12px; border:1px solid rgba(15,23,42,0.04); box-shadow:0 6px 18px rgba(2,6,23,0.04); }
+.team-body { display:grid; grid-template-columns: 1fr 1fr; gap:18px; align-items:start; }
+
+/* Slots grid */
+.team-slots { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; width:100%; }
+.team-slot { background: linear-gradient(180deg,#fbfffb,#ffffff); border-radius:12px; min-height:120px; display:flex; align-items:center; justify-content:center; position:relative; padding:12px; border:1px solid #cfead8; }
 .slot-card { position:relative; text-align:center; padding:6px; display:flex; flex-direction:column; align-items:center; gap:8px; }
-.slot-image { width:88px; height:88px; object-fit:contain; border-radius:10px; background:linear-gradient(180deg,#fbfdff,#fff); padding:6px; }
-.slot-name { margin-top:4px; font-weight:700; text-transform:capitalize; color:#0f172a; font-size:0.95rem; }
-.btn-remove-slot { position:absolute; top:8px; right:8px; background:rgba(255,255,255,0.92); color:#ef4444; border:1px solid rgba(239,68,68,0.08); width:30px; height:30px; border-radius:8px; cursor:pointer; box-shadow:0 6px 14px rgba(2,6,23,0.04); }
+.slot-image { width:88px; height:88px; object-fit:contain; border-radius:10px; background:linear-gradient(180deg,#f6fff6,#fff); padding:8px; box-shadow:0 8px 18px rgba(34,139,34,0.06); }
+.slot-name { margin-top:6px; font-weight:800; text-transform:capitalize; color:#064e3b; font-size:0.95rem; }
+.btn-remove-slot { position:absolute; top:8px; right:8px; background:#ef4444; color:white; width:28px; height:28px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:800; box-shadow:0 8px 22px rgba(239,68,68,0.14); border:none; }
 .btn-remove-slot:hover { transform:translateY(-2px); }
 .slot-empty { display:flex; flex-direction:column; align-items:center; gap:6px; color:#9ca3af; }
-.empty-dot { width:46px; height:46px; border-radius:8px; background:rgba(243,244,246,0.8); display:flex; align-items:center; justify-content:center; font-size:24px; color:#374151; }
-.add-section { width:55%; }
+.empty-dot { width:46px; height:46px; border-radius:10px; background:#f0fff4; display:flex; align-items:center; justify-content:center; font-size:22px; color:#16a34a; font-weight:800; }
+
 .add-section { width:100%; display:flex; flex-direction:column; gap:12px; }
 .add-controls { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
 .add-search-input { flex:1; padding:10px 12px; border-radius:10px; border:1px solid rgba(15,23,42,0.06); box-shadow:0 6px 18px rgba(2,6,23,0.04); }
-.picker-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:12px; max-height:420px; overflow:auto; padding:6px; }
-.picker-card { display:flex; align-items:center; gap:10px; background:transparent; border-radius:10px; padding:8px; border:1px solid rgba(15,23,42,0.04); transition:transform 140ms ease, box-shadow 140ms ease; }
-.picker-card:hover { transform:translateY(-4px); box-shadow:0 10px 26px rgba(2,6,23,0.06); }
-.picker-thumb { width:64px; height:64px; object-fit:contain; border-radius:8px; }
-.picker-meta { flex:1; }
+.picker-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:12px; max-height:420px; overflow:auto; padding:6px; }
+.picker-card { display:flex; flex-direction:column; align-items:center; gap:8px; background:linear-gradient(180deg,#fff,#fbfffb); border-radius:12px; padding:10px; border:1px solid rgba(15,23,42,0.04); transition:transform 140ms ease, box-shadow 140ms ease; }
+.picker-card:hover { transform:translateY(-6px); box-shadow:0 14px 34px rgba(2,6,23,0.06); }
+.picker-thumb { width:72px; height:72px; object-fit:contain; border-radius:8px; }
+.picker-meta { flex:1; text-align:center; }
 .picker-name { font-weight:800; text-transform:capitalize; color:#0f172a; }
 .type-pill { background:linear-gradient(180deg,#f6f7ff,#f0f4ff); padding:6px 10px; border-radius:999px; font-size:12px; margin-right:6px; text-transform:capitalize; color:#0f172a; }
-.btn-add { background:linear-gradient(180deg,#10b981,#059669); color:#fff; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:700; }
+.btn-add { background:linear-gradient(180deg,#10b981,#059669); color:#fff; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:700; width:100%; }
 .btn-add:hover { opacity:0.98; transform:translateY(-2px); }
 .team-select-row { display:flex; gap:12px; align-items:center; margin-top:8px; }
 .team-select-left { flex:1; display:flex; flex-direction:column; gap:6px; }
@@ -42,31 +44,13 @@
 .btn-add-team { background:linear-gradient(180deg,#06b6d4,#0891b2); color:white; border:none; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:800; box-shadow:0 10px 24px rgba(8,145,178,0.12); }
 .btn-add-team.disabled, .btn-add-team:disabled { opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
 .modal-overlay { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(9,10,14,0.45); z-index:400; }
-
 .btn-create-small { background: linear-gradient(180deg,#6366f1,#4f46e5); color: #fff; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; box-shadow:0 8px 20px rgba(79,70,229,0.12); }
 .btn-create-small:hover { transform:translateY(-2px); }
-.btn-add-small { background: linear-gradient(180deg,#06b6d4,#0891b2); color:white; border:none; padding:6px 10px; border-radius:8px; cursor:pointer; }
+.btn-add-small { background: linear-gradient(180deg,#06b6d4,#0891b2); color:white; border:none; padding:6px 10px; border-radius:8px; cursor:pointer; width:100%; }
 .btn-add-small:hover { transform:translateY(-2px); }
 .btn-remove-small { background:#fff; color:#ef4444; border:1px solid rgba(239,68,68,0.12); padding:6px 8px; border-radius:8px; cursor:pointer; }
 .btn-remove-small:hover { background:#fff; box-shadow:0 8px 18px rgba(239,68,68,0.06); }
 
-/* Minimal headings inside manage modal */
-.team-vacantes { font-size:0.8rem; font-weight:800; letter-spacing:1px; color:#111827; margin-bottom:6px; }
-.team-divider { height:1px; background:linear-gradient(90deg, rgba(15,23,42,0.06), rgba(15,23,42,0)); margin:14px 0; border-radius:2px; }
-.add-header { display:flex; justify-content:space-between; align-items:center; gap:12px; }
-.add-header h3 { margin:0; font-size:1rem; font-weight:800; }
-.add-header .select-title { font-size:0.95rem; font-weight:700; color:#6b7280; }
-.picker-grid.small { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap:12px; }
-.picker-card.small { flex-direction:column; align-items:center; padding:10px; border-radius:12px; background:linear-gradient(180deg,#fff,#fbfdff); border:1px solid rgba(15,23,42,0.04); }
-.picker-thumb.small { width:72px; height:72px; }
-
-/* Details modal images */
-.details-image { display:flex; gap:12px; align-items:center; }
-.details-image .main-image { width:220px; height:auto; max-width:45vw; object-fit:contain; border-radius:8px; }
-.details-image .shiny-image { width:120px; height:auto; opacity:0.95; }
-
-/* Add hover and subtle transitions */
-.team-manage-modal .team-slot, .picker-card.small { transition: transform 180ms ease, box-shadow 180ms ease; }
 .team-manage-modal .team-slot:hover { transform: translateY(-6px); box-shadow:0 18px 40px rgba(2,6,23,0.06); }
 .picker-card.small:hover { transform: translateY(-6px); box-shadow:0 14px 34px rgba(2,6,23,0.06); }
 
@@ -74,15 +58,20 @@
 .picker-grid::-webkit-scrollbar, .add-list-grid::-webkit-scrollbar { height:8px; width:8px }
 .picker-grid::-webkit-scrollbar-thumb { background:rgba(15,23,42,0.12); border-radius:999px }
 
-.modal-overlay { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(9,10,14,0.45); z-index:400; }
+@media (max-width: 650px) {
+  .team-body { grid-template-columns: 1fr; }
+  .team-slots { grid-template-columns: repeat(3, 1fr); gap:6px; }
+  .slot-image { width:60px; height:60px; }
+  .picker-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+}
 <template>
   <div class="pokedex-container">
     <!-- Header -->
     <header class="header">
       <div class="header-content">
         <div class="logo-section">
-          <h1 class="logo">🎮 PokéDex PWA</h1>
-        </div>
+              <h1 class="logo"><span class="logo-icon">🎮</span>PokéDex</h1>
+            </div>
         <div class="header-search">
           <input
             v-model="searchName"
@@ -94,10 +83,30 @@
         <div class="user-section">
           <span class="username">{{ authStore.user?.username }}</span>
           <button @click="toggleProfileMenu" class="btn-profile">👤</button>
-          <button @click="toggleTheme" class="btn-theme" :title="theme === 'dark' ? 'Modo oscuro' : 'Modo claro'">🌓</button>
+          <button @click="toggleTheme" class="btn-theme" :title="theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+            <span v-if="theme==='dark'">☀️</span>
+            <span v-else>🌙</span>
+          </button>
+          <button @click="toggleSideMenu" class="btn-hamburger" title="Abrir menú">
+            ☰
+          </button>
+
           <div v-if="showProfileMenu" class="profile-menu">
             <a href="#" @click.prevent="activeTab = 'profile'">Mi Perfil</a>
             <a href="#" @click.prevent="logout">Cerrar Sesión</a>
+          </div>
+
+          <div v-if="showSideMenu" class="side-menu">
+            <nav class="side-nav">
+              <button v-for="tab in tabs" :key="tab.id" class="side-nav-item" @click="navigateToTab(tab.id)">
+                <span class="side-icon">{{ tab.icon }}</span>
+                <span class="side-label">{{ tab.label }}</span>
+                <span v-if="tab.count !== undefined" class="side-count">{{ tab.count }}</span>
+              </button>
+            </nav>
+            <div class="side-footer">
+              <button class="side-logout" @click.prevent="logout">Cerrar Sesión</button>
+            </div>
           </div>
         </div>
       </div>
@@ -204,11 +213,11 @@
               <div class="pokemon-image">
                 <img
                   :src="getFavoriteImage(fav)"
-                  :alt="fav.pokemonName"
+                  :alt="getNameFrom(fav)"
                   loading="lazy"
                 />
               </div>
-              <h3 class="pokemon-name">{{ fav.pokemonName }}</h3>
+              <h3 class="pokemon-name">{{ getNameFrom(fav) }}</h3>
               <button
                 @click="removeFavoriteUI(fav)"
                 class="btn-remove"
@@ -261,26 +270,39 @@
               :key="team.id"
               class="team-card"
             >
-              <h3>{{ team.name }}</h3>
-              <p v-if="team.description" class="team-description">
-                {{ team.description }}
-              </p>
-              <p class="team-stats">
-                {{ team.pokemon?.length || 0 }}/6 Pokémon
-              </p>
+              <div class="team-card-top">
+                <div>
+                  <h3 class="team-card-title">{{ team.name }}</h3>
+                  <p v-if="team.description" class="team-description">{{ team.description }}</p>
+                </div>
+                <div class="team-meta-mini">{{ (team.pokemon || []).length }}/6</div>
+              </div>
+
+              <div class="team-pokemon-grid">
+                <div v-for="n in 6" :key="n" class="team-pokemon-slot">
+                  <template v-if="team.pokemon && team.pokemon[n-1]">
+                    <img :src="getFavoriteImage(team.pokemon[n-1])" :alt="getNameFrom(team.pokemon[n-1])" class="team-slot-img" />
+                    <div class="team-slot-name">{{ getNameFrom(team.pokemon[n-1]) }}</div>
+                  </template>
+                  <template v-else>
+                    <div class="team-slot-empty">+</div>
+                  </template>
+                </div>
+              </div>
+
               <div class="team-actions">
-                <button @click="selectTeam(team)" class="btn-manage">
-                  Administrar
-                </button>
-                <button @click="deleteTeam(team.id)" class="btn-delete">
-                  Eliminar
-                </button>
+                <button @click="selectTeam(team)" class="btn-manage">Administrar</button>
+                <button @click="deleteTeam(team.id)" class="btn-delete">Eliminar</button>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Amigos y Batallas -->
+        <div v-if="activeTab === 'battles'" class="tab-content">
+          <BattleView />
+        </div>
+
         <div v-if="activeTab === 'friends'" class="tab-content">
           <div class="section-header">
             <h2>{{ userStore.friends.length }} Amigos</h2>
@@ -527,8 +549,8 @@
             <div v-for="n in 6" :key="n" class="team-slot">
               <template v-if="selectedTeamForManage.pokemon && selectedTeamForManage.pokemon[n-1]">
                 <div class="slot-card">
-                  <img :src="getFavoriteImage(selectedTeamForManage.pokemon[n-1])" :alt="selectedTeamForManage.pokemon[n-1].pokemonName" class="slot-image" />
-                  <div class="slot-name">{{ selectedTeamForManage.pokemon[n-1].pokemonName }}</div>
+                  <img :src="getFavoriteImage(selectedTeamForManage.pokemon[n-1])" :alt="getNameFrom(selectedTeamForManage.pokemon[n-1])" class="slot-image" />
+                  <div class="slot-name">{{ getNameFrom(selectedTeamForManage.pokemon[n-1]) }}</div>
                   <button class="btn-remove-slot" @click="removePokemonFromTeam(selectedTeamForManage.id, selectedTeamForManage.pokemon[n-1].id)">✕</button>
                 </div>
               </template>
@@ -582,6 +604,7 @@ import { useAuthStore } from "../stores/authStore.js";
 import { usePokemonStore } from "../stores/pokemonStore.js";
 import { useUserStore } from "../stores/userStore.js";
 import ProfileCard from "../components/ProfileCard.vue";
+import BattleView from "../views/BattleView.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -601,6 +624,7 @@ const myCode = ref("");
 const friendCode = ref("");
 const codeCopied = ref(false);
 const types = ref([]);
+const showSideMenu = ref(false);
 
 const newTeam = ref({
   name: "",
@@ -616,6 +640,7 @@ const tabs = computed(() => [
   { id: "pokedex", label: "Pokédex", icon: "📚", count: pokemonStore.pokemonWithDetails.length },
   { id: "favorites", label: "Favoritos", icon: "⭐", count: userStore.favorites.length },
   { id: "teams", label: "Equipos", icon: "🏆", count: userStore.teams.length },
+  { id: "battles", label: "Batallas", icon: "⚔️" },
   { id: "friends", label: "Amigos", icon: "👥", count: userStore.friends.length },
 ]);
 
@@ -678,89 +703,92 @@ function toggleFriendForm() {
   friendCode.value = "";
 }
 
+function toggleSideMenu() {
+  showSideMenu.value = !showSideMenu.value;
+}
+
+function openBattles() {
+  showSideMenu.value = false;
+  activeTab.value = 'battles';
+}
+
+function openProfileEdit() {
+  showSideMenu.value = false;
+  activeTab.value = 'profile';
+}
+
+function navigateToTab(tabId) {
+  showSideMenu.value = false;
+  activeTab.value = tabId;
+}
+
 function logout() {
   authStore.logout();
   router.push("/auth");
 }
 
-function getPokemonImage(pokemon) {
-  const id = pokemon.url
-    ? pokemon.url.split("/").filter(Boolean).pop()
-    : pokemon.pokemonId;
-  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
-}
-
-function getPokemonId(url) {
-  // aceptar tanto string/numero como objetos con distintas formas
-  if (!url && typeof url !== 'number') return null;
-  if (typeof url === 'number') return url;
-  if (typeof url === 'string') {
-    return parseInt(url.split('/').filter(Boolean).pop());
+function getIdFrom(input) {
+  if (input === null || input === undefined) return null;
+  if (typeof input === 'number') return Number(input);
+  if (typeof input === 'string') {
+    const n = parseInt(input, 10);
+    return Number.isNaN(n) ? null : n;
   }
-  // si es un objeto recibido en lugar de url
-  if (typeof url === 'object') {
-    if (url.id) return parseInt(url.id);
-    if (url.pokemonId) return parseInt(url.pokemonId);
-    if (url.url) return parseInt(url.url.split('/').filter(Boolean).pop());
+  if (typeof input === 'object') {
+    if (input.pokemonId !== undefined && input.pokemonId !== null) return Number(input.pokemonId);
+    if (input.pokemonid !== undefined && input.pokemonid !== null) return Number(input.pokemonid);
+    if (input.id !== undefined && input.id !== null) return Number(input.id);
+    if (input.url) {
+      const parts = input.url.split('/').filter(Boolean);
+      const last = parts[parts.length - 1];
+      const n = parseInt(last, 10);
+      return Number.isNaN(n) ? null : n;
+    }
   }
   return null;
 }
 
-function isFavorite(pokemon) {
-  // aceptar pokemon objeto o id
-  const id = typeof pokemon === 'object' ? (getPokemonId(pokemon.url) || pokemon.id || pokemon.pokemonId) : pokemon;
-  if (!id) return false;
-  return userStore.favorites.some((f) => f.pokemonId === parseInt(id));
+function getNameFrom(input) {
+  if (!input) return null;
+  if (typeof input === 'string') return input;
+  if (input.name) return input.name;
+  if (input.pokemonName) return input.pokemonName;
+  if (input.pokemonname) return input.pokemonname;
+  return null;
 }
 
-async function toggleFavorite(pokemon) {
-  // aceptar varios tipos de input
-  let id = null;
-  let name = '';
-  if (typeof pokemon === 'number' || typeof pokemon === 'string') {
-    id = parseInt(pokemon);
-  } else if (typeof pokemon === 'object') {
-    id = getPokemonId(pokemon.url) || pokemon.id || pokemon.pokemonId;
-    name = pokemon.name || pokemon.pokemonName || '';
-  }
+function getImageFor(input) {
+  const id = getIdFrom(input);
+  if (id) return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+  const name = (getNameFrom(input) || '').toLowerCase();
+  const found = pokemonStore.pokemonWithDetails.find(p => p.name.toLowerCase() === name);
+  if (found) return found.image;
+  return 'https://via.placeholder.com/150?text=No+Image';
+}
 
-  if (!id) return;
-
-  if (!authStore.isAuthenticated) {
-    alert('Debes iniciar sesión para gestionar favoritos.');
-    router.push('/auth');
-    return;
-  }
-
-  // Asegurar nombre
-  if (!name) {
-    const found = pokemonStore.pokemonWithDetails.find(p => p.id === parseInt(id) || p.name === (pokemon.name || pokemon.pokemonName));
+function normalizePokemon(p) {
+  if (!p) return { id: null, name: 'Unknown' };
+  const id = getIdFrom(p);
+  let name = getNameFrom(p) || 'Unknown';
+  if ((!name || name === 'Unknown') && id) {
+    const found = pokemonStore.pokemonWithDetails.find(x => Number(x.id) === Number(id));
     if (found) name = found.name;
   }
-
-  if (!name) name = 'Unknown';
-
-  try {
-    if (userStore.favorites.some((f) => f.pokemonId === parseInt(id))) {
-      await userStore.removeFavorite(id);
-    } else {
-      await userStore.addFavorite(id, name);
-    }
-  } catch (err) {
-    console.error('Error toggling favorite:', err);
-    alert(err?.response?.data?.error || err.message || 'No se pudo procesar la acción de favorito');
-  }
+  return { id: id ? Number(id) : null, name };
 }
 
 async function selectPokemon(pokemon) {
   selectedPokemon.value = pokemon;
   try {
-    const details = await pokemonStore.fetchPokemonDetails(
-      getPokemonId(pokemon.url)
-    );
-    pokemonDetails.value = details;
+    const id = getIdFrom(pokemon);
+    if (id) {
+      const details = await pokemonStore.fetchPokemonDetails(id);
+      pokemonDetails.value = details;
+    } else {
+      pokemonDetails.value = null;
+    }
   } catch (error) {
-    console.error("Error loading details:", error);
+    console.error('Error loading details:', error);
   }
 }
 
@@ -782,40 +810,37 @@ async function deleteTeam(teamId) {
   }
 }
 
+
 async function removePokemonFromTeam(teamId, pokemonTeamId) {
   await userStore.removePokemonFromTeam(teamId, pokemonTeamId);
   if (selectedTeamForManage.value) {
-    selectedTeamForManage.value = userStore.teams.find((t) => t.id === teamId);
+    const tid = Number(teamId);
+    selectedTeamForManage.value = userStore.teams.find((t) => Number(t.id) === Number(tid));
   }
 }
 
-async function addPokemonToTeamUI(teamId, pokemon) {
+async function addPokemonToTeamUI(teamId, pokemonInput) {
   if (!authStore.isAuthenticated) {
     alert('Debes iniciar sesión para gestionar equipos.');
     router.push('/auth');
     return;
   }
   try {
-    // normalize teamId
     const tid = Number(teamId);
-    // check remaining slots
-    const team = userStore.teams.find(t => t.id === tid || t.id === String(tid));
+    const team = userStore.teams.find(t => Number(t.id) === Number(tid) || t.id === String(tid));
     const slotsLeft = 6 - (team?.pokemon?.length || 0);
     if (slotsLeft <= 0) {
       alert('El equipo ya tiene 6 pokémon');
       return;
     }
 
-    // normalize pokemon input (accept object with id/name or shape from API)
-    const pid = pokemon && (pokemon.id || pokemon.pokemonId || getPokemonId(pokemon.url) || pokemon.id === 0 ? pokemon.id : null);
-    const pname = pokemon && (pokemon.name || pokemon.pokemonName || 'Unknown');
-    if (!pid) {
-      throw new Error('pokemon id inválido');
-    }
-    await userStore.addPokemonToTeam(tid, Number(pid), pname);
-    // refrescar equipos y la vista actual del modal
+    const resolved = normalizePokemon(pokemonInput);
+    if (!resolved.id) throw new Error('pokemon id inválido');
+
+    console.debug('addPokemonToTeamUI -> payload', { teamId: tid, pokemonId: Number(resolved.id), pokemonName: resolved.name });
+    await userStore.addPokemonToTeam(tid, Number(resolved.id), resolved.name || 'Unknown');
     await userStore.fetchTeams();
-    selectedTeamForManage.value = userStore.teams.find((t) => t.id === teamId);
+    selectedTeamForManage.value = userStore.teams.find((t) => Number(t.id) === Number(tid));
     showAddPokemonList.value = false;
   } catch (err) {
     console.error('Error agregando pokémon al equipo:', err);
@@ -830,19 +855,43 @@ const filteredAddList = computed(() => {
     .slice(0, 120);
 });
 
-// helper to normalize pokemon object coming from different sources
-function normalizePokemon(p) {
-  if (!p) return null;
-  const id = p.id || p.pokemonId || getPokemonId(p.url);
-  const name = p.name || p.pokemonName || p.name;
-  return { id: id ? Number(id) : null, name: name || 'Unknown' };
+// isFavorite/toggleFavorite use unified id/name helpers
+function isFavorite(pokemon) {
+  const id = getIdFrom(pokemon);
+  if (!id) return false;
+  return userStore.favorites.some((f) => Number(f.pokemonId || f.pokemonid) === Number(id));
+}
+
+async function toggleFavorite(pokemon) {
+  const resolved = normalizePokemon(pokemon);
+  const id = resolved.id;
+  let name = resolved.name;
+  if (!id) return;
+  if (!authStore.isAuthenticated) {
+    alert('Debes iniciar sesión para gestionar favoritos.');
+    router.push('/auth');
+    return;
+  }
+  try {
+    console.debug('toggleFavorite -> resolved id,name:', { id, name });
+    if (userStore.favorites.some((f) => Number(f.pokemonId || f.pokemonid) === Number(id))) {
+      await userStore.removeFavorite(id);
+    } else {
+      await userStore.addFavorite(id, name || 'Unknown');
+    }
+    await userStore.fetchFavorites();
+  } catch (err) {
+    console.error('Error toggling favorite:', err);
+    alert(err?.response?.data?.error || err.message || 'No se pudo procesar la acción de favorito');
+  }
 }
 
 const selectedTeamId = ref('');
 
 function teamSlotsLeft(teamId) {
-  const id = teamId && teamId.value !== undefined ? teamId.value : teamId;
-  const team = userStore.teams.find(t => t.id === id);
+  const raw = teamId && teamId.value !== undefined ? teamId.value : teamId;
+  const id = Number(raw);
+  const team = userStore.teams.find(t => Number(t.id) === Number(id) || t.id === String(id));
   return 6 - (team?.pokemon?.length || 0);
 }
 
@@ -855,10 +904,9 @@ async function addSelectedToTeam() {
   if (!selectedTeamId || !selectedTeamId.value) return;
   const pokemon = selectedPokemon.value;
   if (!pokemon) return;
-  const id = pokemon.id || pokemon.pokemonId || getPokemonId(pokemon.url);
-  const name = pokemon.name || pokemon.pokemonName || 'Unknown';
+  const normalized = normalizePokemon(pokemon);
   try {
-    await addPokemonToTeamUI(selectedTeamId.value, { id, name });
+    await addPokemonToTeamUI(selectedTeamId.value, normalized);
     selectedTeamId.value = '';
   } catch (err) {
     console.error('Error añadiendo pokémon al equipo:', err);
@@ -903,15 +951,7 @@ function goToBattle(friend) {
 }
 
 function getFavoriteImage(fav) {
-  // Prefer pokemonId; fallback to name lookup in pokemonStore
-  const id = fav.pokemonId || fav.id || null;
-  if (id) {
-    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
-  }
-  // buscar por nombre en el store
-  const found = pokemonStore.pokemonWithDetails.find(p => p.name === (fav.pokemonName || '').toLowerCase());
-  if (found) return found.image || `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${found.id}.png`;
-  return 'https://via.placeholder.com/150?text=No+Image';
+  return getImageFor(fav);
 }
 
 async function removeFavoriteUI(fav) {
@@ -921,8 +961,40 @@ async function removeFavoriteUI(fav) {
     return;
   }
   try {
-    // fav puede ser objeto con pokemonId
-    await userStore.removeFavorite(fav);
+    // Determinar pokemonId a eliminar de forma robusta
+    let pid = null;
+    console.debug('removeFavoriteUI -> received fav:', fav);
+    if (!fav && fav !== 0) throw new Error('Favorito inválido');
+    if (typeof fav === 'number' || typeof fav === 'string') {
+      pid = Number(fav);
+    } else if (typeof fav === 'object') {
+      if (fav.pokemonId !== undefined && fav.pokemonId !== null) pid = Number(fav.pokemonId);
+      else if (fav.pokemonid !== undefined && fav.pokemonid !== null) pid = Number(fav.pokemonid);
+      else if (fav.id !== undefined && fav.id !== null) {
+        const found = userStore.favorites.find(f => f.id === fav.id || f.id === Number(fav.id));
+        if (found) pid = Number(found.pokemonId || found.pokemonid);
+      }
+      if (!pid && (fav.pokemonName || fav.pokemonname)) {
+        const pName = fav.pokemonName || fav.pokemonname;
+        const foundByName = userStore.favorites.find(f => ((f.pokemonName || f.pokemonname) || '').toLowerCase() === (pName || '').toLowerCase());
+        if (foundByName) pid = Number(foundByName.pokemonId || foundByName.pokemonid);
+      }
+    }
+    console.debug('removeFavoriteUI -> resolved pid:', pid);
+    if (!pid) {
+      // Intentar fallback delegando al store con el objeto completo
+      console.warn('removeFavoriteUI -> pid no resuelto, intentando fallback con objeto completo');
+      try {
+        await userStore.removeFavorite(fav);
+        await userStore.fetchFavorites();
+        return;
+      } catch (e) {
+        console.error('removeFavoriteUI -> fallback failed:', e);
+        throw new Error('pokemonId requerido para eliminar favorito');
+      }
+    }
+
+    await userStore.removeFavorite(pid);
     await userStore.fetchFavorites();
   } catch (err) {
     console.error('Error removing favorite:', err);
@@ -1054,6 +1126,35 @@ async function removeFavoriteUI(fav) {
 .profile-menu a:hover {
   background: #f8f9fa;
 }
+
+.btn-hamburger {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 6px 8px;
+}
+
+.side-menu {
+  position: absolute;
+  top: 48px;
+  right: 8px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  z-index: 300;
+  overflow: hidden;
+  min-width: 160px;
+}
+
+.side-nav { display:flex; flex-direction:column; }
+.side-nav-item { display:flex; align-items:center; gap:8px; padding:10px 12px; border: none; background: transparent; text-align:left; cursor:pointer; width:100%; }
+.side-nav-item:hover { background:#f6f7fb; }
+.side-icon { width:24px; display:inline-block; }
+.side-label { flex:1; }
+.side-count { background:#eef2ff; color:#3730a3; padding:2px 8px; border-radius:12px; font-weight:700; font-size:0.85rem; }
+.side-footer { padding:8px; border-top:1px solid #f0f0f0; }
+.side-logout { width:100%; padding:8px 10px; border-radius:8px; border:none; background:#ff6b6b; color:white; cursor:pointer; }
 
 /* Navigation Tabs */
 .main-content {
@@ -1493,6 +1594,15 @@ async function removeFavoriteUI(fav) {
   gap: 0.5rem;
   margin-top: 1rem;
 }
+.team-card-top { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.team-card-title { margin:0; font-size:1.1rem; color:#0f172a; }
+.team-meta-mini { background:#eef2ff; color:#3730a3; padding:6px 8px; border-radius:8px; font-weight:800; }
+.team-pokemon-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-top:12px; }
+.team-pokemon-slot { background: #fff; border-radius:10px; padding:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:80px; border:1px solid rgba(15,23,42,0.04); }
+.team-slot-img { width:64px; height:64px; object-fit:contain; }
+.team-slot-name { margin-top:6px; font-size:0.85rem; color:#0f172a; font-weight:700; text-transform:capitalize; }
+.team-slot-empty { width:36px; height:36px; border-radius:8px; background:linear-gradient(180deg,#fbfdff,#fff); display:flex; align-items:center; justify-content:center; color:#94a3b8; font-weight:800; }
+
 
 .team-actions .btn-manage,
 .team-actions .btn-delete {
@@ -1501,6 +1611,132 @@ async function removeFavoriteUI(fav) {
   padding: 0.5rem;
   font-size: 0.85rem;
 }
+
+/* Nuevo diseño de equipos: tarjetas claras, ranuras con borde verde y badge de eliminar */
+.team-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f6fbf8 100%);
+  color: #21303a;
+  padding: 1.25rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(23, 43, 45, 0.06);
+  border: 1px solid rgba(34,139,34,0.08);
+}
+
+.team-card h3 {
+  color: #14323a;
+  font-size: 1.15rem;
+  margin-bottom: 0.25rem;
+}
+
+.team-card .team-description {
+  color: #52636a;
+}
+
+.team-stats {
+  color: #6b7b7f;
+  font-weight: 700;
+}
+
+/* Modal de administración: ranuras más visuales */
+.team-manage-modal {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.25rem;
+  max-width: 900px;
+}
+
+.team-slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.9rem;
+}
+
+.team-slot {
+  background: #f7fff7;
+  border: 2px solid #62c57a;
+  border-radius: 10px;
+  padding: 0.6rem;
+  min-height: 120px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slot-card {
+  width: 100%;
+  text-align: center;
+}
+
+.slot-image {
+  width: 100%;
+  max-width: 110px;
+  height: auto;
+  display: block;
+  margin: 0 auto 0.5rem;
+}
+
+.slot-name {
+  font-weight: 700;
+  text-transform: capitalize;
+  color: #15423a;
+}
+
+.btn-remove-slot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(255,107,107,0.15);
+}
+
+.btn-remove-slot:hover {
+  transform: scale(1.05);
+}
+
+.slot-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: #6b7b7f;
+}
+
+.empty-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e9fff0;
+  color: #2f8b4e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  box-shadow: inset 0 -4px 8px rgba(44,160,90,0.06);
+}
+
+.btn-add-small {
+  background: linear-gradient(135deg,#1e88e5 0%,#1976d2 100%);
+  color: white;
+  border: none;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+/* Hacer los botones del modal más compactos y consistentes */
+.btn-create-small { padding: 0.45rem 0.7rem; border-radius: 8px; }
+
 
 /* Friends Grid */
 .friends-title {

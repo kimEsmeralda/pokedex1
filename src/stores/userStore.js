@@ -24,11 +24,11 @@ export const useUserStore = defineStore('user', () => {
       let pid = null;
       // si es objeto, puede venir con pokemonId (el id del pokemon) o id (pk de la fila)
       if (typeof pokemonId === 'object') {
-        pid = pokemonId.pokemonId || null;
+        pid = pokemonId.pokemonId || pokemonId.pokemonid || null;
         if (!pid && pokemonId.id) {
           // buscar en favorites el registro con esa fila id
           const found = favorites.value.find(f => f.id === pokemonId.id);
-          pid = found ? found.pokemonId : null;
+          pid = found ? (found.pokemonId || found.pokemonid) : null;
         }
       } else {
         pid = pokemonId;

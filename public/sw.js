@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pokedex-v1';
+const CACHE_NAME = 'pokedex-v2';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -177,6 +177,26 @@ async function processQueue() {
 self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-requests') {
     event.waitUntil(processQueue());
+  }
+});
+
+// Permitir mensajes desde la página para operaciones administrativas
+self.addEventListener('message', (event) => {
+  if (!event.data) return;
+  const action = event.data.action;
+  if (action === 'clearCaches') {
+    event.waitUntil(
+      caches.keys().then((keys) => {
+        return Promise.all(keys.map((k) => caches.delete(k)));
+      }).then(() => {
+        return self.clients.matchAll().then((clients) => {
+          clients.forEach((c) => c.postMessage({ action: 'cachesCleared' }));
+        });
+      })
+    );
+  }
+  if (action === 'skipWaiting') {
+    self.skipWaiting();
   }
 });
 

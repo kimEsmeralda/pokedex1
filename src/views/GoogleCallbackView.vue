@@ -67,7 +67,7 @@ onMounted(async () => {
 
     // Enviar información al backend para crear/actualizar usuario
     const backendResponse = await axios.post(
-      "http://localhost:3000/api/auth/google",
+      "https://be-production-1e0f.up.railway.app/api/auth/google",
       {
         googleId: googleUser.id,
         email: googleUser.email,

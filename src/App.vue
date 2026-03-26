@@ -5,7 +5,20 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
 import { RouterView } from 'vue-router'
+import { useAuthStore } from './stores/authStore'
+import { requestPushPermissionAndSubscribe } from './utils/pushNotifications'
+
+const authStore = useAuthStore()
+
+onMounted(() => {
+  // If user is already authenticated, attempt push subscription
+  // You might want to ask via a deliberate UI button otherwise
+  if (authStore.isAuthenticated) {
+    requestPushPermissionAndSubscribe()
+  }
+})
 </script>
 
 <style scoped>

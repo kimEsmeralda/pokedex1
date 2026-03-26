@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { authService } from '../services/api.js';
+import { requestPushPermissionAndSubscribe } from '../utils/pushNotifications.js';
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(JSON.parse(localStorage.getItem('user')) || null);
@@ -30,6 +31,10 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await authService.register(email, password, username);
       setToken(response.data.token);
       setUser(response.data.user);
+      
+      // Request push notifications after successful register
+      setTimeout(() => { requestPushPermissionAndSubscribe(); }, 1500);
+
       return response.data;
     } catch (error) {
       throw error.response?.data?.error || 'Error en registro';
@@ -41,6 +46,10 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await authService.login(email, password);
       setToken(response.data.token);
       setUser(response.data.user);
+      
+      // Request push notifications after successful login
+      setTimeout(() => { requestPushPermissionAndSubscribe(); }, 1500);
+
       return response.data;
     } catch (error) {
       throw error.response?.data?.error || 'Error en login';

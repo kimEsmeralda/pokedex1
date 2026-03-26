@@ -81,6 +81,12 @@ export const pokemonService = {
     api.get(`/pokemon/region/${region}`)
 };
 
+// Notifications
+export const notificationsService = {
+  subscribe: (subscription) => 
+    api.post('/notifications/subscribe', subscription)
+};
+
 export default api;
 
 // Interceptor para capturar fallos de red en peticiones no-GET y encolarlas

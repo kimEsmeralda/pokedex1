@@ -2,7 +2,14 @@ import axios from 'axios';
 import { saveRequest } from '../utils/offlineQueue.js';
 
 // Usamos la variable de entorno y como respaldo la URL de producción directamente
-const API_URL = import.meta.env.VITE_API_URL || 'https://be-production-1e0f.up.railway.app/api';
+let API_URL = import.meta.env.VITE_API_URL || 'https://be-production-1e0f.up.railway.app/api';
+if (API_URL.endsWith('/')) {
+  API_URL = API_URL.slice(0, -1);
+}
+if (!API_URL.endsWith('/api')) {
+  // Solo se agrega si el usuario no lo puso en la variable de entorno
+  API_URL += '/api';
+}
 
 const api = axios.create({
   baseURL: API_URL

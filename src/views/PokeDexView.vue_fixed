@@ -1,4 +1,4 @@
-﻿.team-manage-modal {
+�.team-manage-modal {
   width: min(860px, 94%);
   background: #ffffff;
   border-radius: 14px;
@@ -70,25 +70,25 @@
     <header class="header">
       <div class="header-content">
         <div class="logo-section">
-              <h1 class="logo"><span class="logo-icon">🎮</span>PokéDex</h1>
+              <h1 class="logo"><span class="logo-icon">�x}�</span>PokéDex</h1>
             </div>
         <div class="header-search">
           <input
             v-model="searchName"
             type="text"
-            placeholder="ðŸ” Buscar Pokémon..."
+            placeholder="�x� Buscar Pokémon..."
             class="global-search"
           />
         </div>
         <div class="user-section">
           <span class="username">{{ authStore.user?.username }}</span>
-          <button @click="toggleProfileMenu" class="btn-profile">👤</button>
+          <button @click="toggleProfileMenu" class="btn-profile">�x�</button>
           <button @click="toggleTheme" class="btn-theme" :title="theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
-            <span v-if="theme==='dark'">â˜€ï¸</span>
-            <span v-else>🌙</span>
+            <span v-if="theme==='dark'">�ܬ️</span>
+            <span v-else>�xR"</span>
           </button>
           <button @click="toggleSideMenu" class="btn-hamburger" title="Abrir menú">
-            â˜°
+            �ܰ
           </button>
 
           <div v-if="showProfileMenu" class="profile-menu">
@@ -187,7 +187,7 @@
                 :class="{ active: isFavorite(pokemon) }"
                 title="Agregar a favoritos"
               >
-                {{ isFavorite(pokemon) ? "â¤ï¸" : "🤍" }}
+                {{ isFavorite(pokemon) ? "❤️" : "�x��" }}
               </button>
             </div>
           </div>
@@ -200,7 +200,7 @@
           </div>
 
           <div v-if="userStore.favorites.length === 0" class="empty-state">
-            <p>â­ No tienes favoritos aún</p>
+            <p>⭐ No tienes favoritos aún</p>
             <p class="empty-hint">Agrega Pokémon a favoritos desde la Pokédex</p>
           </div>
 
@@ -222,7 +222,7 @@
                 @click="removeFavoriteUI(fav)"
                 class="btn-remove"
               >
-                Quitar âŒ
+                Quitar �R
               </button>
             </div>
           </div>
@@ -248,7 +248,7 @@
             <div class="form-group">
               <textarea
                 v-model="newTeam.description"
-                placeholder="DescripciÃ³n (opcional)"
+                placeholder="Descripción (opcional)"
               ></textarea>
             </div>
             <div class="form-actions">
@@ -260,7 +260,7 @@
           </div>
 
           <div v-if="userStore.teams.length === 0" class="empty-state">
-            <p>ðŸ† No tienes equipos aún</p>
+            <p>�x�  No tienes equipos aún</p>
             <p class="empty-hint">Crea tu primer equipo para participar en batallas</p>
           </div>
 
@@ -340,13 +340,13 @@
                 class="btn-copy"
                 :class="{ copied: codeCopied }"
               >
-                {{ codeCopied ? "âœ“ Copiado" : "Copiar" }}
+                {{ codeCopied ? "�S Copiado" : "Copiar" }}
               </button>
             </div>
           </div>
 
           <div v-if="userStore.friends.length === 0" class="empty-state">
-            <p>👥 No tienes amigos aún</p>
+            <p>�x� No tienes amigos aún</p>
             <p class="empty-hint">Comparte tu código para que otros se unan</p>
           </div>
 
@@ -365,7 +365,7 @@
                 <p class="friend-email">{{ friend.email }}</p>
                 <div class="friend-actions">
                   <button @click="goToBattle(friend)" class="btn-battle">
-                    ⚔️ Batallar
+                    �a️ Batallar
                   </button>
                   <button @click="removeFriend(friend.id)" class="btn-delete">
                     Eliminar
@@ -385,7 +385,7 @@
       @click.self="selectedPokemon = null"
     >
       <div class="pokemon-details-modal">
-        <button @click="selectedPokemon = null" class="btn-close">âœ•</button>
+        <button @click="selectedPokemon = null" class="btn-close">�S"</button>
         <div class="details-content">
           <div class="details-image">
             <img
@@ -407,12 +407,12 @@
               <span class="pokemon-id">#{{ selectedPokemon.id }}</span>
             </div>
 
-            <!-- CategorÃ­a -->
+            <!-- Categoría -->
             <div v-if="selectedPokemon.genus" class="info-section">
-              <p class="info-label"><strong>CategorÃ­a:</strong> {{ selectedPokemon.genus }}</p>
+              <p class="info-label"><strong>Categoría:</strong> {{ selectedPokemon.genus }}</p>
             </div>
 
-            <!-- DescripciÃ³n -->
+            <!-- Descripción -->
             <div v-if="selectedPokemon.description" class="info-section">
               <p class="description">{{ selectedPokemon.description }}</p>
             </div>
@@ -434,7 +434,7 @@
 
             <!-- Stats -->
             <div v-if="selectedPokemon.stats?.length" class="info-section">
-              <p><strong>EstadÃ­sticas Base:</strong></p>
+              <p><strong>Estadísticas Base:</strong></p>
               <div class="stats-grid">
                 <div v-for="stat in selectedPokemon.stats" :key="stat.name" class="stat-item">
                   <label>{{ stat.name.toUpperCase() }}</label>
@@ -475,14 +475,14 @@
               </div>
             </div>
 
-            <!-- CaracterÃ­sticas especiales -->
+            <!-- Características especiales -->
             <div class="info-section badges-section">
-              <span v-if="selectedPokemon.isBaby" class="badge badge-baby">👶 Bebé</span>
-              <span v-if="selectedPokemon.isLegendary" class="badge badge-legendary">â­ Legendario</span>
-              <span v-if="selectedPokemon.isMythical" class="badge badge-mythical">âœ¨ MÃ­tico</span>
+              <span v-if="selectedPokemon.isBaby" class="badge badge-baby">�x� Bebé</span>
+              <span v-if="selectedPokemon.isLegendary" class="badge badge-legendary">⭐ Legendario</span>
+              <span v-if="selectedPokemon.isMythical" class="badge badge-mythical">�S� Mítico</span>
             </div>
 
-            <!-- Botones de acciÃ³n -->
+            <!-- Botones de acción -->
               <!-- Agregar a equipo -->
               <div class="add-to-team-section">
                 <h4>Añadir a un equipo</h4>
@@ -506,7 +506,7 @@
                       @click="addSelectedToTeam()"
                       title="Añadir el Pokémon al equipo seleccionado"
                     >
-                      âž• Añadir
+                      �~" Añadir
                     </button>
                   </div>
                 </div>
@@ -518,7 +518,7 @@
                 class="btn-action"
                 :class="{ active: isFavorite(selectedPokemon) }"
               >
-                {{ isFavorite(selectedPokemon) ? "â¤ï¸ En Favoritos" : "🤍 Favorito" }}
+                {{ isFavorite(selectedPokemon) ? "❤️ En Favoritos" : "�x�� Favorito" }}
               </button>
               <button @click="selectedPokemon = null" class="btn-action btn-close-modal">
                 Cerrar
@@ -529,7 +529,7 @@
       </div>
     </div>
 
-    <!-- Modal de AdministraciÃ³n de Equipo (mejorado) -->
+    <!-- Modal de Administración de Equipo (mejorado) -->
     <div v-if="selectedTeamForManage" class="modal-overlay" @click.self="selectedTeamForManage = null">
       <div class="team-manage-modal">
         <div class="team-header">
@@ -538,7 +538,7 @@
             <div class="team-meta">{{ (selectedTeamForManage.pokemon || []).length }}/6 Pokémon</div>
           </div>
           <div class="team-actions">
-            <button class="btn-close" @click="selectedTeamForManage = null">âœ•</button>
+            <button class="btn-close" @click="selectedTeamForManage = null">�S"</button>
           </div>
         </div>
 
@@ -551,7 +551,7 @@
                 <div class="slot-card">
                   <img :src="getFavoriteImage(selectedTeamForManage.pokemon[n-1])" :alt="getNameFrom(selectedTeamForManage.pokemon[n-1])" class="slot-image" />
                   <div class="slot-name">{{ getNameFrom(selectedTeamForManage.pokemon[n-1]) }}</div>
-                  <button class="btn-remove-slot" @click="removePokemonFromTeam(selectedTeamForManage.id, selectedTeamForManage.pokemon[n-1].id)">âœ•</button>
+                  <button class="btn-remove-slot" @click="removePokemonFromTeam(selectedTeamForManage.id, selectedTeamForManage.pokemon[n-1].id)">�S"</button>
                 </div>
               </template>
               <template v-else>
@@ -567,16 +567,16 @@
           <div class="add-section">
             <div class="team-divider"></div>
             <div class="add-header">
-              <h3>AÃ‘ADIR POKÃ‰MONES</h3>
+              <h3>A�ADIR POK�0MONES</h3>
               <div class="select-title">SELECCIONA</div>
             </div>
             <div class="add-controls">
-              <input v-model="teamSearch" class="add-search-input" placeholder="Buscar pokÃ©mon por nombre..." />
-              <button @click="showAddPokemonList = !showAddPokemonList" class="btn-create-small">{{ showAddPokemonList ? 'Ocultar' : 'Agregar pokÃ©mon' }}</button>
+              <input v-model="teamSearch" class="add-search-input" placeholder="Buscar pokémon por nombre..." />
+              <button @click="showAddPokemonList = !showAddPokemonList" class="btn-create-small">{{ showAddPokemonList ? 'Ocultar' : 'Agregar pokémon' }}</button>
             </div>
 
             <div v-if="showAddPokemonList" class="add-picker">
-              <div v-if="pokemonStore.loading" class="loading">Cargando pokÃ©mon...</div>
+              <div v-if="pokemonStore.loading" class="loading">Cargando pokémon...</div>
               <div v-else class="picker-grid small">
                 <div v-for="p in filteredAddList" :key="p.id" class="picker-card small">
                   <img :src="p.image || 'https://via.placeholder.com/110'" :alt="p.name" class="picker-thumb small" />
@@ -636,12 +636,12 @@ const teamSearch = ref('');
 const theme = ref(localStorage.getItem('theme') || 'light');
 
 const tabs = computed(() => [
-  { id: "profile", label: "Mi Perfil", icon: "👤" },
-  { id: "pokedex", label: "Pokédex", icon: "📱", count: pokemonStore.pokemonWithDetails.length },
-  { id: "favorites", label: "Favoritos", icon: "â­", count: userStore.favorites.length },
-  { id: "teams", label: "Equipos", icon: "ðŸ†", count: userStore.teams.length },
-  { id: "battles", label: "Batallas", icon: "⚔️" },
-  { id: "friends", label: "Amigos", icon: "👥", count: userStore.friends.length },
+  { id: "profile", label: "Mi Perfil", icon: "�x�" },
+  { id: "pokedex", label: "Pokédex", icon: "�xa", count: pokemonStore.pokemonWithDetails.length },
+  { id: "favorites", label: "Favoritos", icon: "⭐", count: userStore.favorites.length },
+  { id: "teams", label: "Equipos", icon: "�x� ", count: userStore.teams.length },
+  { id: "battles", label: "Batallas", icon: "�a️" },
+  { id: "friends", label: "Amigos", icon: "�x�", count: userStore.friends.length },
 ]);
 
 const filteredAndTypedPokemon = computed(() => {
@@ -661,7 +661,7 @@ const filteredPokemon = computed(() => {
 
 onMounted(async () => {
   try {
-    await pokemonStore.fetchPokemonList(151); // Primeras 151 generaciÃ³n original
+    await pokemonStore.fetchPokemonList(151); // Primeras 151 generación original
     await pokemonStore.fetchTypesList();
     
     // Extraer tipos disponibles
@@ -669,16 +669,16 @@ onMounted(async () => {
       types.value = pokemonStore.types.map(t => t.name);
     }
   } catch (err) {
-    console.error("Error loading pokÃ©mon:", err);
+    console.error("Error loading pokémon:", err);
   }
   
-  // SÃ³lo cargar datos privados si el usuario estÃ¡ autenticado
+  // Sólo cargar datos privados si el usuario está autenticado
   if (authStore.isAuthenticated) {
     await userStore.fetchFavorites();
     await userStore.fetchTeams();
     await userStore.fetchFriends();
   } else {
-    // asegurar arrays vacÃ­os
+    // asegurar arrays vacíos
     userStore.favorites = [];
     userStore.teams = [];
     userStore.friends = [];
@@ -805,7 +805,7 @@ function selectTeam(team) {
 }
 
 async function deleteTeam(teamId) {
-  if (confirm("Â¿EstÃ¡s seguro de que deseas eliminar este equipo?")) {
+  if (confirm("¿Estás seguro de que deseas eliminar este equipo?")) {
     await userStore.deleteTeam(teamId);
   }
 }
@@ -830,7 +830,7 @@ async function addPokemonToTeamUI(teamId, pokemonInput) {
     const team = userStore.teams.find(t => Number(t.id) === Number(tid) || t.id === String(tid));
     const slotsLeft = 6 - (team?.pokemon?.length || 0);
     if (slotsLeft <= 0) {
-      alert('El equipo ya tiene 6 pokÃ©mon');
+      alert('El equipo ya tiene 6 pokémon');
       return;
     }
 
@@ -843,8 +843,8 @@ async function addPokemonToTeamUI(teamId, pokemonInput) {
     selectedTeamForManage.value = userStore.teams.find((t) => Number(t.id) === Number(tid));
     showAddPokemonList.value = false;
   } catch (err) {
-    console.error('Error agregando pokÃ©mon al equipo:', err);
-    alert(err?.response?.data?.error || err.message || 'No se pudo agregar el pokÃ©mon');
+    console.error('Error agregando pokémon al equipo:', err);
+    alert(err?.response?.data?.error || err.message || 'No se pudo agregar el pokémon');
   }
 }
 
@@ -882,7 +882,7 @@ async function toggleFavorite(pokemon) {
     await userStore.fetchFavorites();
   } catch (err) {
     console.error('Error toggling favorite:', err);
-    alert(err?.response?.data?.error || err.message || 'No se pudo procesar la acciÃ³n de favorito');
+    alert(err?.response?.data?.error || err.message || 'No se pudo procesar la acción de favorito');
   }
 }
 
@@ -909,7 +909,7 @@ async function addSelectedToTeam() {
     await addPokemonToTeamUI(selectedTeamId.value, normalized);
     selectedTeamId.value = '';
   } catch (err) {
-    console.error('Error añadiendo pokÃ©mon al equipo:', err);
+    console.error('Error añadiendo pokémon al equipo:', err);
     alert(err?.response?.data?.error || err.message || 'Error al añadir al equipo');
   }
 }
@@ -920,21 +920,8 @@ function toggleTheme() {
   localStorage.setItem('theme', theme.value);
 }
 
-async function generateMyCode() {
-  if (authStore.user && authStore.user.friend_code) {
-    myCode.value = authStore.user.friend_code;
-  } else {
-    try {
-      const res = await api.post('/friends/code/generate');
-      myCode.value = res.data.friendCode;
-      if (authStore.user) {
-        authStore.user.friend_code = res.data.friendCode;
-      }
-    } catch(e) {
-      console.error(e);
-      myCode.value = 'ERROR-AL-GENERAR';
-    }
-  }
+function generateMyCode() {
+  myCode.value = `PKM-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
 }
 
 function copyCode() {
@@ -948,19 +935,19 @@ function copyCode() {
 async function addFriend() {
   if (friendCode.value.trim()) {
     try {
-      console.log("Agregando amigo con código:", friendCode.value);
+      console.log("Agregando amigo con c�digo:", friendCode.value);
       await userStore.addFriendByCode(friendCode.value);
-      alert('¡Amigo agregado con éxito!');
+      alert('�Amigo agregado con �xito!');
       friendCode.value = "";
       showFriendForm.value = false;
     } catch (error) {
-      alert(error.response?.data?.error || 'Error al agregar amigo (Verifique el código o la red)');
+      alert(error.response?.data?.error || 'Error al agregar amigo (Verifique el c�digo o la red)');
     }
   }
 }
 
 function removeFriend(friendId) {
-  if (confirm("Â¿EstÃ¡s seguro de que deseas eliminar este amigo?")) {
+  if (confirm("¿Estás seguro de que deseas eliminar este amigo?")) {
     console.log("Eliminar amigo:", friendId);
   }
 }
@@ -1631,7 +1618,7 @@ async function removeFavoriteUI(fav) {
   font-size: 0.85rem;
 }
 
-/* Nuevo diseÃ±o de equipos: tarjetas claras, ranuras con borde verde y badge de eliminar */
+/* Nuevo diseño de equipos: tarjetas claras, ranuras con borde verde y badge de eliminar */
 .team-card {
   background: linear-gradient(180deg, #ffffff 0%, #f6fbf8 100%);
   color: #21303a;
@@ -1656,7 +1643,7 @@ async function removeFavoriteUI(fav) {
   font-weight: 700;
 }
 
-/* Modal de administraciÃ³n: ranuras mÃ¡s visuales */
+/* Modal de administración: ranuras más visuales */
 .team-manage-modal {
   background: #fff;
   border-radius: 14px;
@@ -1753,7 +1740,7 @@ async function removeFavoriteUI(fav) {
   font-weight: 700;
 }
 
-/* Hacer los botones del modal mÃ¡s compactos y consistentes */
+/* Hacer los botones del modal más compactos y consistentes */
 .btn-create-small { padding: 0.45rem 0.7rem; border-radius: 8px; }
 
 

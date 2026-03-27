@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+﻿import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import router from './router/index.js'
 import App from './App.vue'
@@ -11,31 +11,32 @@ app.use(router)
 app.mount('#app')
 
 if ('serviceWorker' in navigator) {
-	window.addEventListener('load', async () => {
-		try {
-			const reg = await navigator.serviceWorker.register('/sw.js');
-			console.log('Service Worker registrado', reg);
+    window.addEventListener('load', async () => {
+        try {
+            const reg = await navigator.serviceWorker.register('/sw.js');
+            console.log('Service Worker registrado', reg);
 
-			// Si la app se abre con ?clearCache=1 solicitar al SW que borre caches (útil en desarrollo)
-			if (window.location.search.includes('clearCache=1')) {
-				try {
-					const readyReg = await navigator.serviceWorker.ready;
-					if (readyReg && readyReg.active) {
-						readyReg.active.postMessage({ action: 'clearCaches' });
-						console.log('Solicitud enviada al SW para borrar caches');
-					}
-				} catch (e) {
-					console.error('Error solicitando clearCaches al SW:', e);
-				}
-			}
-		} catch (err) {
-			console.error('Error registrando Service Worker:', err);
-		}
-	});
+            // Si la app se abre con ?clearCache=1 solicitar al SW que borre caches (útil en desarrollo)
+            if (window.location.search.includes('clearCache=1')) {
+                try {
+                    const readyReg = await navigator.serviceWorker.ready;
+                    if (readyReg && readyReg.active) {
+                        readyReg.active.postMessage({ action: 'clearCaches' });
+                        console.log('Solicitud enviada al SW para borrar caches');
+                    }
+                } catch (e) {
+                    console.error('Error solicitando clearCaches al SW:', e);
+                }
+            }
+        } catch (err) {
+            console.error('Error registrando Service Worker:', err);
+        }
+    });
 }
+
 // Manejo de sync manual para navegadores sin Background Sync y al recuperar red
 window.addEventListener('online', async () => {
-    console.log('�Conexi�n recuperada! Sincronizando datos...');
+    console.log('¡Conexión recuperada! Sincronizando datos...');
     if ('serviceWorker' in navigator) {
         try {
             const reg = await navigator.serviceWorker.ready;

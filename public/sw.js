@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pokedex-v4';
+﻿const CACHE_NAME = 'pokedex-v4';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -44,7 +44,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 1. Manejo de navegaci�n (HTML) - Single Page Application
+  // 1. Manejo de navegaciï¿½n (HTML) - Single Page Application
   // (Cargar la app sin internet sin importar la URL)
   if (event.request.mode === 'navigate') {
     event.respondWith(
@@ -77,7 +77,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 3. Archivos est�ticos (JS, CSS, Im�genes): cache-first, fallback to network
+  // 3. Archivos estï¿½ticos (JS, CSS, Imï¿½genes): cache-first, fallback to network
   event.respondWith(
     caches.match(event.request)
       .then((cachedResponse) => {
@@ -177,7 +177,7 @@ self.addEventListener('sync', (event) => {
   }
 });
 
-// Permitir mensajes desde la p�gina para operaciones administrativas
+// Permitir mensajes desde la pï¿½gina para operaciones administrativas
 self.addEventListener('message', (event) => {
   if (!event.data) return;
   const action = event.data.action;
@@ -213,7 +213,7 @@ self.addEventListener('push', function(event) {
       }
     };
     event.waitUntil(
-      self.registration.showNotification(data.title || 'Notificaci�n', options)
+      self.registration.showNotification(data.title || 'Notificaciï¿½n', options)
     );
   }
 });

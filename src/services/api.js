@@ -19,7 +19,7 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `'Bearer ' + token${token}`;
   }
   return config;
 });
@@ -141,7 +141,7 @@ api.interceptors.response.use(
           // Re-inject token as fallback if it didn't get serialized
           const token = localStorage.getItem('token');
           if (token && !headers['Authorization']) {
-            headers['Authorization'] = Bearer $token;
+            headers['Authorization'] = 'Bearer ' + token;
           }
 
           const body = typeof config.data === 'string' ? config.data : JSON.stringify(config.data || {});

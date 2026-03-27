@@ -1,7 +1,7 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 import { saveRequest } from '../utils/offlineQueue.js';
 
-// Usamos la variable de entorno y como respaldo la URL de producción directamente
+// Usamos la variable de entorno y como respaldo la URL de producciÃ³n directamente
 let API_URL = import.meta.env.VITE_API_URL || 'https://be-production-1e0f.up.railway.app/api';
 if (API_URL.endsWith('/')) {
   API_URL = API_URL.slice(0, -1);
@@ -76,7 +76,7 @@ export const friendsService = {
     api.get('/friends/battles/history')
 };
 
-// Pokemon (PokéAPI)
+// Pokemon (PokÃ©API)
 export const pokemonService = {
   getList: (limit = 50, offset = 0) =>
     api.get('/pokemon', { params: { limit, offset } }),
@@ -114,7 +114,7 @@ api.interceptors.response.use(
       }
       return Promise.reject(error);
     }
-    // Sólo manejar si no hay config o es un error de red
+    // SÃ³lo manejar si no hay config o es un error de red
     const config = error.config;
     const isNetworkError = !navigator.onLine || error.message === 'Network Error' || error.code === 'ERR_NETWORK';
     if (config && isNetworkError) {
@@ -129,14 +129,19 @@ api.interceptors.response.use(
             // keep config.url
           }
 
-          // Normalizar headers a objeto simple
+                    // Normalizar headers a objeto simple
           let headers = {};
           if (config.headers) {
-            if (typeof config.headers.forEach === 'function') {
-              config.headers.forEach((v, k) => { headers[k] = v; });
-            } else if (typeof config.headers === 'object') {
-              headers = { ...config.headers };
-            }
+            // Fix: Axios headers might be generic objects or AxiosHeaders
+            Object.keys(config.headers).forEach(key => {
+              headers[key] = config.headers[key];
+            });
+          }
+          
+          // Re-inject token as fallback if it didn't get serialized
+          const token = localStorage.getItem('token');
+          if (token && !headers['Authorization']) {
+            headers['Authorization'] = Bearer $token;
           }
 
           const body = typeof config.data === 'string' ? config.data : JSON.stringify(config.data || {});

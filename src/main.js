@@ -37,16 +37,22 @@ if ('serviceWorker' in navigator) {
 // Manejo de sync manual para navegadores sin Background Sync y al recuperar red
 window.addEventListener('online', async () => {
     console.log('¡Conexión recuperada! Sincronizando datos...');
+    
+    // 1. Alert the User that they are back online
+    
+    // 2. Trigger the sync process
     if ('serviceWorker' in navigator) {
         try {
             const reg = await navigator.serviceWorker.ready;
+            
+            // Also notify the active worker directly to process the queue always on online event.
+            // This is safer since Background Sync sometimes delays for minutes on mobile.
+            if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({ action: 'processQueue' });
+            }
+            
             if (reg.sync) {
-                await reg.sync.register('sync-requests');
-            } else {
-                // Fallback: enviar mensaje al SW para que procese ahora
-                if (navigator.serviceWorker.controller) {
-                    navigator.serviceWorker.controller.postMessage({ action: 'processQueue' });
-                }
+                await reg.sync.register('sync-requests').catch(e => console.log('Sync err:', e));
             }
         } catch (e) {
             console.error('Error al intentar sincronizar:', e);

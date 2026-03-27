@@ -33,3 +33,22 @@ if ('serviceWorker' in navigator) {
 		}
 	});
 }
+// Manejo de sync manual para navegadores sin Background Sync y al recuperar red
+window.addEventListener('online', async () => {
+    console.log('¡Conexión recuperada! Sincronizando datos...');
+    if ('serviceWorker' in navigator) {
+        try {
+            const reg = await navigator.serviceWorker.ready;
+            if (reg.sync) {
+                await reg.sync.register('sync-requests');
+            } else {
+                // Fallback: enviar mensaje al SW para que procese ahora
+                if (navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({ action: 'processQueue' });
+                }
+            }
+        } catch (e) {
+            console.error('Error al intentar sincronizar:', e);
+        }
+    }
+});

@@ -1,8 +1,9 @@
-const CACHE_NAME = 'pokedex-v3';
+const CACHE_NAME = 'pokedex-v4';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/manifest.json'
+  '/manifest.json',
+  '/cubopoke.svg'
 ];
 
 // Instalar el service worker
@@ -14,7 +15,7 @@ self.addEventListener('install', (event) => {
         return cache.addAll(urlsToCache);
       })
       .catch((err) => {
-        console.log('Error en instalación:', err);
+        console.log('Error en inst', err);
       })
   );
   self.skipWaiting();
@@ -37,63 +38,61 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Estrategia de cache: Network first, fallback to cache
+// Estrategia de cache mejorada para Single Page App (PWA offline real)
 self.addEventListener('fetch', (event) => {
-  // Solo cachear peticiones GET
   if (event.request.method !== 'GET') {
     return;
   }
 
-  // Para peticiones a la API, usar network-first
+  // 1. Manejo de navegaci�n (HTML) - Single Page Application
+  // (Cargar la app sin internet sin importar la URL)
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          return response;
+        })
+        .catch(() => {
+          return caches.match('/index.html');
+        })
+    );
+    return;
+  }
+
+  // 2. Peticiones a la API: network-first, fallback to cache
   if (event.request.url.includes('/api/')) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          // Actualizar el cache con la nueva respuesta
           if (response.status === 200) {
             const responseClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseClone);
-            });
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
           }
           return response;
         })
-        .catch(() => {
-          // Si falla la red, intentar desde el cache
-          return caches.match(event.request);
-        })
+        .catch(() => caches.match(event.request))
     );
-  } else {
-    // Para archivos estáticos, usar cache-first
-    event.respondWith(
-      caches.match(event.request)
-        .then((response) => {
-          if (response) {
-            return response;
-          }
-          return fetch(event.request)
-            .then((response) => {
-              if (response.status === 200) {
-                const responseClone = response.clone();
-                caches.open(CACHE_NAME).then((cache) => {
-                  cache.put(event.request, responseClone);
-                });
-              }
-              return response;
-            });
-        })
-        .catch(() => {
-          // Fallback para offline
-          return new Response('Offline - Página no disponible', {
-            status: 503,
-            statusText: 'Service Unavailable',
-            headers: new Headers({
-              'Content-Type': 'text/plain'
-            })
-          });
-        })
-    );
+    return;
   }
+
+  // 3. Archivos est�ticos (JS, CSS, Im�genes): cache-first, fallback to network
+  event.respondWith(
+    caches.match(event.request)
+      .then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        return fetch(event.request).then((networkResponse) => {
+          if (networkResponse.status === 200 || networkResponse.type === 'opaque') {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          }
+          return networkResponse;
+        }).catch(() => new Response('', { status: 404, statusText: 'Not Found' }));
+      })
+  );
 });
 
 // IndexedDB helper (similar to front-end) para procesar la cola desde el SW
@@ -159,7 +158,6 @@ async function processQueue() {
         headers: headers
       };
       if (entry.body) {
-        // body is stored as string
         options.body = entry.body;
       }
 
@@ -167,7 +165,6 @@ async function processQueue() {
       if (response && (response.status === 200 || response.status === 201 || response.status === 204)) {
         await deleteRequest(entry.id);
       }
-      // If not ok, we leave it for next sync
     } catch (e) {
       // network still failing; keep the entry
     }
@@ -180,7 +177,7 @@ self.addEventListener('sync', (event) => {
   }
 });
 
-// Permitir mensajes desde la página para operaciones administrativas
+// Permitir mensajes desde la p�gina para operaciones administrativas
 self.addEventListener('message', (event) => {
   if (!event.data) return;
   const action = event.data.action;
@@ -198,6 +195,9 @@ self.addEventListener('message', (event) => {
   if (action === 'skipWaiting') {
     self.skipWaiting();
   }
+  if (action === 'processQueue') {
+    event.waitUntil(processQueue());
+  }
 });
 
 // Push event listener for Web Push Notifications
@@ -213,7 +213,7 @@ self.addEventListener('push', function(event) {
       }
     };
     event.waitUntil(
-      self.registration.showNotification(data.title || 'Notificación de Pokédex', options)
+      self.registration.showNotification(data.title || 'Notificaci�n', options)
     );
   }
 });
@@ -222,22 +222,18 @@ self.addEventListener('push', function(event) {
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
   const urlToOpen = new URL(event.notification.data.url || '/', self.location.origin).href;
-  
+
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
-      // Check if there is already a window/tab open with the target URL
       for (let i = 0; i < windowClients.length; i++) {
         const client = windowClients[i];
         if (client.url === urlToOpen && 'focus' in client) {
           return client.focus();
         }
       }
-      // If not, open a new window
       if (clients.openWindow) {
         return clients.openWindow(urlToOpen);
       }
     })
   );
 });
-
-

@@ -1,6 +1,6 @@
 {
-  "name": "Cubopoke",
-  "short_name": "Cubopoke",
+  "name": "Pokédex",
+  "short_name": "Pokédex",
   "description": "Aplicación de Pokédex con batallas, equipos y favoritos",
   "start_url": "/",
   "display": "standalone",

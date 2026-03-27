@@ -603,6 +603,7 @@ import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/authStore.js";
 import { usePokemonStore } from "../stores/pokemonStore.js";
 import { useUserStore } from "../stores/userStore.js";
+import api from "../services/api.js";
 import ProfileCard from "../components/ProfileCard.vue";
 import BattleView from "../views/BattleView.vue";
 

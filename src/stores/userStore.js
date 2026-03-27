@@ -60,9 +60,6 @@ export const useUserStore = defineStore('user', () => {
     } catch (error) {
       throw error;
     }
-  } catch (error) {
-      throw error;
-    }
   }
 
   async function fetchFavorites() {

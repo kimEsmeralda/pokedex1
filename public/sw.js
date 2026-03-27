@@ -162,7 +162,8 @@ async function processQueue() {
       }
 
       const response = await fetch(entry.url, options);
-      if (response && (response.status === 200 || response.status === 201 || response.status === 204)) {
+      // Remove it from queue if we got ANY response from the server (even a 400 error) so it doesn't get stuck forever
+      if (response) {
         await deleteRequest(entry.id);
       }
     } catch (e) {

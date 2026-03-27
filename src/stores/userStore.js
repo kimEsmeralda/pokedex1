@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia';
+﻿import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { teamsService, favoritesService, friendsService } from '../services/api.js';
 
@@ -8,12 +8,24 @@ export const useUserStore = defineStore('user', () => {
   const friends = ref([]);
   const battles = ref([]);
 
-  async function addFavorite(pokemonId, pokemonName) {
+    async function addFavorite(pokemonId, pokemonName) {
     try {
       if (!pokemonId) throw new Error('pokemonId requerido');
       if (!pokemonName) pokemonName = 'Unknown';
-      await favoritesService.add(pokemonId, pokemonName);
-      await fetchFavorites();
+      
+      // Actualización optimista (para que se vea al instante incluso sin internet)
+      const exists = favorites.value.some(f => (f.pokemonId || f.pokemonid) === pokemonId);
+      if (!exists) {
+        favorites.value.push({ pokemonId: pokemonId, pokemonName: pokemonName, id: 'temp-' + Date.now() });
+      }
+
+      const res = await favoritesService.add(pokemonId, pokemonName);
+      // Solo hacer el fetch real si no está encolado para offline
+      if (res && res.data && res.data.offlineQueued) {
+        console.log('Favorito encolado para offline.');
+      } else {
+        await fetchFavorites();
+      }
     } catch (error) {
       throw error;
     }
@@ -22,11 +34,9 @@ export const useUserStore = defineStore('user', () => {
   async function removeFavorite(pokemonId) {
     try {
       let pid = null;
-      // si es objeto, puede venir con pokemonId (el id del pokemon) o id (pk de la fila)
       if (typeof pokemonId === 'object') {
         pid = pokemonId.pokemonId || pokemonId.pokemonid || null;
         if (!pid && pokemonId.id) {
-          // buscar en favorites el registro con esa fila id
           const found = favorites.value.find(f => f.id === pokemonId.id);
           pid = found ? (found.pokemonId || found.pokemonid) : null;
         }
@@ -38,9 +48,19 @@ export const useUserStore = defineStore('user', () => {
         throw new Error('pokemonId requerido para eliminar favorito');
       }
 
-      await favoritesService.remove(pid);
-      await fetchFavorites();
+      // Actualización optimista
+      favorites.value = favorites.value.filter(f => (f.pokemonId || f.pokemonid) !== pid);
+
+      const res = await favoritesService.remove(pid);
+      if (res && res.data && res.data.offlineQueued) {
+        console.log('Eliminación de favorito encolada para offline.');
+      } else {
+        await fetchFavorites();
+      }
     } catch (error) {
+      throw error;
+    }
+  } catch (error) {
       throw error;
     }
   }

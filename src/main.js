@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import router from './router/index.js'
 import App from './App.vue'
 import './styles/pokemon-types.css'
+import { useUserStore } from './stores/userStore.js'
 
 const app = createApp(App)
 
@@ -62,14 +63,17 @@ window.addEventListener('online', async () => {
 
 // Escuchar mensajes del Service Worker
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.addEventListener('message', async (event) => {
+    navigator.serviceWorker.addEventListener('message', (event) => {
         if (event.data && event.data.action === 'queueProcessed') {
             console.log(`Se sincronizaron ${event.data.count} elementos.`);
             // Si quieres que el estado de los favoritos se actualice dinámicamente cuando vuelve la luz
-            const { useUserStore } = await import('./stores/userStore.js');
-            const userStore = useUserStore();
-            userStore.fetchFavorites();
-            userStore.fetchTeams();
+            try {
+                const userStore = useUserStore();
+                userStore.fetchFavorites();
+                userStore.fetchTeams();
+            } catch (e) {
+                console.error('Error actualizando estado post-sync:', e);
+            }
         }
     });
 }

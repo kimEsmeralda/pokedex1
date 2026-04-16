@@ -71,7 +71,9 @@ export const friendsService = {
   getAll: () =>
     api.get('/friends'),
   startBattle: (friendId, team1Id, team2Id) =>
-    api.post('/friends/battles/start', { friendId, team1Id, team2Id }),
+    api.post('/friends/battles/start', { friendId, userTeamId: team1Id, friendTeamId: team2Id }),
+  calculateBattleResult: (battleId, winnerId) =>
+    api.post('/friends/battles/result', { battleId, winnerId }),
   getBattleHistory: () =>
     api.get('/friends/battles/history')
 };

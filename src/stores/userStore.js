@@ -1,6 +1,6 @@
 ﻿import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { teamsService, favoritesService, friendsService } from '../services/api.js';
+import api, { teamsService, favoritesService, friendsService } from '../services/api.js';
 
 export const useUserStore = defineStore('user', () => {
   const favorites = ref([]);
@@ -146,6 +146,15 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  async function removeFriend(friendId) {
+    try {
+      await api.delete('/friends/' + friendId);
+      await fetchFriends();
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async function startBattle(friendId, team1Id, team2Id) {
     try {
       const response = await friendsService.startBattle(friendId, team1Id, team2Id);
@@ -179,6 +188,7 @@ export const useUserStore = defineStore('user', () => {
     deleteTeam,
     generateFriendCode,
     addFriendByCode,
+    removeFriend,
     fetchFriends,
     startBattle,
     fetchBattleHistory

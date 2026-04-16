@@ -896,7 +896,9 @@ async function addFriend() {
 
 function removeFriend(friendId) {
   if (confirm("Â¿EstÃ¡s seguro de que deseas eliminar este amigo?")) {
-    console.log("Eliminar amigo:", friendId);
+    userStore.removeFriend(friendId).catch(err => {
+      alert(err?.response?.data?.error || err.message || 'Error al eliminar el amigo');
+    });
   }
 }
 

@@ -1,4 +1,3 @@
-
 <template>
   <div class="battle-container">
     <div class="battle-header">
@@ -130,7 +129,7 @@ const authStore = useAuthStore();
 const battleIdParam = route.params.battleId;
 const friendIdParam = route.params.friendId;
 
-const friendName = ref('');
+const friendName = ref("");
 const selectedTeam = ref(null);
 const loading = ref(false);
 
@@ -190,7 +189,7 @@ onMounted(async () => {
 
     if (authStore.user && data.attackerId !== authStore.user.id) {
        currentPokemon1.value.hp = Math.max(0, currentPokemon1.value.hp - data.damage);
-       battleLogs.value.unshift({ id: logIdCounter++, text: El  enemigo usa  y causa  de da�o a ., type: 'log-enemy' });
+       battleLogs.value.unshift({ id: logIdCounter++, text: `El ${getPokemonName(currentPokemon2.value)} enemigo usa ${data.move} y causa ${data.damage} de daño a ${getPokemonName(currentPokemon1.value)}.`, type: 'log-enemy' });
        playerHit.value = true;
        setTimeout(() => playerHit.value = false, 500);
        checkFaint();
@@ -216,12 +215,12 @@ onMounted(async () => {
       
       selectedTeam.value = myTeam;
       isBattling.value = true;
-      battleLogs.value = [{ id: logIdCounter++, text: '�Te has unido a la batalla!', type: 'log-info' }];
+      battleLogs.value = [{ id: logIdCounter++, text: "¡Te has unido a la batalla!", type: 'log-info' }];
       
       socket.emit('join-battle', { battleId: battleId.value });
     } catch (err) {
       console.error(err);
-      alert('No se pudo unir a la batalla. Verifica que la URL sea correcta o la batalla exista.');
+      alert("No se pudo unir a la batalla. Verifica que la URL sea correcta o la batalla exista.");
     } finally {
       loading.value = false;
     }
@@ -238,7 +237,7 @@ function selectTeam(team) {
 
 function getPokemonImage(id) {
   if(!id) return 'https://via.placeholder.com/150';
-  return https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/.png;
+  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
 }
 
 function healthStyle(hp) {
@@ -253,11 +252,11 @@ function healthClass(hp) {
 
 async function startBattle() {
   if (!selectedTeam.value) {
-    alert('Debes seleccionar un equipo');
+    alert("Debes seleccionar un equipo");
     return;
   }
   if (!selectedTeam.value.pokemon || selectedTeam.value.pokemon.length === 0) {
-    alert('Tu equipo est� vac�o');
+    alert("Tu equipo está vacío");
     return;
   }
 
@@ -266,7 +265,7 @@ async function startBattle() {
     const friendId = friendIdParam ? parseInt(friendIdParam) : null;
 
     if (!friendId) {
-      alert('Error: Faltan datos del amigo para iniciar la batalla.');
+      alert("Error: Faltan datos del amigo para iniciar la batalla.");
       loading.value = false;
       return;
     }
@@ -277,7 +276,7 @@ async function startBattle() {
     team2Active.value = res.data.teams.team2.pokemon.map(p => ({ ...p, hp: 100 }));
 
     if (team2Active.value.length === 0) {
-       alert('El oponente no tiene Pok�mon en su equipo');
+       alert("El oponente no tiene Pokémon en su equipo");
        loading.value = false;
        return;
     }
@@ -286,13 +285,13 @@ async function startBattle() {
     currentPokemon2.value = team2Active.value.shift();
     
     isBattling.value = true;
-    battleLogs.value = [{ id: logIdCounter++, text: '�Comienza la batalla!', type: 'log-info' }];
+    battleLogs.value = [{ id: logIdCounter++, text: "¡Comienza la batalla!", type: 'log-info' }];
     
     socket.emit('join-battle', { battleId: battleId.value });
     
   } catch (error) {
     console.error(error);
-    alert('Error iniciando batalla: ' + (error.response?.data?.error || error.message));
+    alert("Error iniciando batalla: " + (error.response?.data?.error || error.message));
   } finally {
     loading.value = false;
   }
@@ -307,7 +306,7 @@ function attack(moveName) {
   const move = moveName;
 
   currentPokemon2.value.hp = Math.max(0, currentPokemon2.value.hp - damage);
-  battleLogs.value.unshift({ id: logIdCounter++, text: ${getPokemonName(currentPokemon1.value)} usa  y causa  de da�o a ., type: 'log-player' });
+  battleLogs.value.unshift({ id: logIdCounter++, text: `${getPokemonName(currentPokemon1.value)} usa ${move} y causa ${damage} de daño a ${getPokemonName(currentPokemon2.value)}.`, type: 'log-player' });
   enemyHit.value = true;
   setTimeout(() => enemyHit.value = false, 500);
 
@@ -325,21 +324,21 @@ function attack(moveName) {
 
 function checkFaint() {
   if (currentPokemon1.value.hp <= 0) {
-    battleLogs.value.unshift({ id: logIdCounter++, text: �Tu  se ha debilitado! Pierdes una carta., type: 'log-faint' });
+    battleLogs.value.unshift({ id: logIdCounter++, text: `¡Tu ${getPokemonName(currentPokemon1.value)} se ha debilitado! Pierdes una carta.`, type: 'log-faint' });
     if (team1Active.value.length > 0) {
       setTimeout(() => {
         currentPokemon1.value = team1Active.value.shift();
-        battleLogs.value.unshift({ id: logIdCounter++, text: �Adelante, !, type: 'log-info' });
+        battleLogs.value.unshift({ id: logIdCounter++, text: `¡Adelante, ${getPokemonName(currentPokemon1.value)}!`, type: 'log-info' });
       }, 1500);
     } else {
       setTimeout(() => finishBattle(false), 1500);
     }
   } else if (currentPokemon2.value.hp <= 0) {
-    battleLogs.value.unshift({ id: logIdCounter++, text: �El  enemigo se ha debilitado! Su carta se esfuma., type: 'log-faint' });
+    battleLogs.value.unshift({ id: logIdCounter++, text: `¡El ${getPokemonName(currentPokemon2.value)} enemigo se ha debilitado! Su carta se esfuma.`, type: 'log-faint' });
     if (team2Active.value.length > 0) {
       setTimeout(() => {
         currentPokemon2.value = team2Active.value.shift();
-        battleLogs.value.unshift({ id: logIdCounter++, text: El oponente env�a a ., type: 'log-info' });
+        battleLogs.value.unshift({ id: logIdCounter++, text: `El oponente envía a ${getPokemonName(currentPokemon2.value)}.`, type: 'log-info' });
       }, 1500);
     } else {
       setTimeout(() => finishBattle(true), 1500);
@@ -358,7 +357,7 @@ async function finishBattle(win) {
     try {
       await friendsService.calculateBattleResult(battleId.value, winnerUserId);
     } catch (error) {
-      console.error('Error guardando el resultado:', error);
+      console.error("Error guardando el resultado:", error);
     }
   }
 }
@@ -377,7 +376,6 @@ function resetBattle() {
   padding-bottom: 2rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
 .battle-header {
   display: flex;
   align-items: center;
@@ -386,19 +384,12 @@ function resetBattle() {
   background: rgba(0, 0, 0, 0.4);
   color: white;
 }
-
 .btn-back {
   color: #ffcb05;
   text-decoration: none;
   font-weight: bold;
 }
-
-h1 {
-  margin: 0;
-  color: #ffcb05;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-}
-
+h1 { margin: 0; color: #ffcb05; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); }
 .battle-content {
   display: flex;
   flex-direction: column;
@@ -407,283 +398,127 @@ h1 {
   max-width: 800px;
   margin: 0 auto;
 }
-
 .team-selector, .battle-simulation {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 15px;
   padding: 2rem;
   box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
-
-h2 {
-  color: #333;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
+h2 { color: #333; margin-bottom: 1.5rem; text-align: center; }
 .teams-available {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
 }
-
 .team-option {
   border: 2px solid #ccc;
   border-radius: 10px;
   padding: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: white;
 }
-
-.team-option:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-.team-option.selected {
-  border-color: #ffcb05;
-  background: #fff9e6;
-  box-shadow: 0 0 15px rgba(255, 203, 5, 0.3);
-}
-
-.team-info {
-  background: #f5f5f5;
-  border-radius: 10px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  border-left: 4px solid #3c5aa6;
-}
-
+.team-option:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+.team-option.selected { border-color: #4CAF50; background: #e8f5e9; }
+.team-option ul { list-style: none; padding: 0; margin-top: 1rem; font-size: 0.9rem; color: #666; }
 .btn-start-battle {
   width: 100%;
   padding: 1rem;
-  background: #3c5aa6;
-  color: white;
+  background: #ffcb05;
+  color: #3b4cca;
   border: none;
   border-radius: 8px;
   font-size: 1.2rem;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.btn-start-battle:hover:not(:disabled) {
-  background: #2a3f75;
-}
-
-.btn-start-battle:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
-
-.btn-attack {
-  margin: 0.5rem;
-  padding: 0.8rem 1.2rem;
-  border-radius: 8px;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-  background: #ffa500;
-  color: #333;
-  transition: transform 0.2s;
-}
-
-.btn-attack.strong {
-  background: #e3350d;
-  color: #fff;
-}
-
-.btn-attack:hover:not(:disabled) {
-  transform: scale(1.05);
-}
-
-.btn-attack:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.attack-controls {
   margin-top: 1rem;
-  text-align: center;
+  transition: all 0.3s ease;
 }
-
-/* Arena Styles */
-.battle-arena {
-  padding: 2rem;
-  max-width: 1000px;
-  margin: 0 auto;
+.btn-start-battle:hover:not(:disabled) {
+  background: #ffdd57;
+  transform: translateY(-2px);
 }
-
+.btn-start-battle:disabled { opacity: 0.7; cursor: not-allowed; }
+.battle-arena { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+.battle-arena h2 { color: white; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
 .arena-layout {
   display: flex;
-  justify-items: center;
   align-items: center;
+  justify-content: center;
   gap: 2rem;
-  margin-bottom: 2rem;
+  margin: 3rem 0;
 }
-
-@media (max-width: 768px) {
-  .arena-layout {
-    flex-direction: column;
-  }
-}
-
+.vs-badge { font-size: 3rem; font-weight: bold; color: white; text-shadow: 0 0 15px #ffcb05; font-style: italic; }
 .pokemon-card {
-  flex: 1;
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
+  border-radius: 20px;
   padding: 1.5rem;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  width: 300px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.3);
   position: relative;
-  min-width: 250px;
+  transition: transform 0.1s;
 }
-
-.player-card {
-  border-bottom: 6px solid #4CAF50;
+.shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
 }
-
-.enemy-card {
-  border-bottom: 6px solid #e3350d;
-}
-
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 0.5rem;
   margin-bottom: 1rem;
 }
-
-.card-header h3 {
-  margin: 0;
-  text-transform: capitalize;
-}
-
-.hp-text {
+.card-header h3 { margin: 0; color: #333; text-transform: capitalize; }
+.hp-text { font-weight: bold; color: #666; }
+.image-container { height: 200px; display: flex; align-items: center; justify-content: center; margin: 1rem 0; }
+.image-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.health-bar-container { background: #eee; height: 12px; border-radius: 6px; overflow: hidden; margin: 1rem 0; }
+.health-fill { height: 100%; transition: width 0.3s ease, background-color 0.3s ease; }
+.health-high { background: #4CAF50; }
+.health-medium { background: #FFC107; }
+.health-low { background: #F44336; }
+.cards-left { text-align: center; font-size: 0.9rem; color: #666; margin-top: 0.5rem; }
+.attack-controls { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1.5rem; }
+.btn-attack {
+  padding: 0.8rem;
+  border: none;
+  border-radius: 8px;
+  background: #2a5298;
+  color: white;
   font-weight: bold;
-  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
 }
-
-.image-container {
-  height: 200px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #f0f0f0;
-  border-radius: 10px;
-  margin-bottom: 1rem;
-}
-
-.image-container img {
-  max-height: 180px;
-  object-fit: contain;
-}
-
-/* Health Bar */
-.health-bar-container {
-  background: #e0e0e0;
-  height: 12px;
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-}
-
-.health-bar {
-  width: 100%;
-  height: 100%;
-}
-
-.health-fill {
-  height: 100%;
-  transition: width 0.3s ease, background-color 0.3s ease;
-}
-
-.health-high { background-color: #4CAF50; }
-.health-medium { background-color: #FFC107; }
-.health-low { background-color: #F44336; }
-
-.cards-left {
-  text-align: center;
-  font-size: 0.9rem;
-  color: #666;
-  font-weight: bold;
-}
-
-.vs-badge {
-  background: #ffcb05;
-  color: #3c5aa6;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: 900;
-  font-size: 1.5rem;
-  border: 4px solid white;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  z-index: 10;
-}
-
-/* Animations */
-.shake {
-  animation: shake 0.5s;
-}
-
-@keyframes shake {
-  0% { transform: translate(1px, 1px) rotate(0deg); }
-  10% { transform: translate(-1px, -2px) rotate(-1deg); }
-  20% { transform: translate(-3px, 0px) rotate(1deg); }
-  30% { transform: translate(3px, 2px) rotate(0deg); }
-  40% { transform: translate(1px, -1px) rotate(1deg); }
-  50% { transform: translate(-1px, 2px) rotate(-1deg); }
-  60% { transform: translate(-3px, 1px) rotate(0deg); }
-  70% { transform: translate(3px, 1px) rotate(-1deg); }
-  80% { transform: translate(-1px, -1px) rotate(1deg); }
-  90% { transform: translate(1px, 2px) rotate(0deg); }
-  100% { transform: translate(1px, -2px) rotate(-1deg); }
-}
-
-/* Battle Log */
+.btn-attack:hover:not(:disabled) { background: #1e3c72; }
+.btn-attack.strong { background: #e74c3c; }
+.btn-attack.strong:hover:not(:disabled) { background: #c0392b; }
+.btn-attack:disabled { opacity: 0.5; cursor: not-allowed; }
 .battle-log {
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
   border-radius: 10px;
   padding: 1.5rem;
   height: 200px;
   overflow-y: auto;
-  border: 2px solid rgba(255,255,255,0.2);
+  color: white;
+  margin-top: 2rem;
 }
-
-.battle-log p {
-  margin: 0.5rem 0;
-  padding: 0.5rem;
-  border-radius: 5px;
-  font-family: monospace;
-}
-
-.log-info { color: #ffcb05; text-align: center; }
-.log-player { color: #4CAF50; border-left: 3px solid #4CAF50; background: rgba(76, 175, 80, 0.1); }
-.log-enemy { color: #F44336; border-left: 3px solid #F44336; background: rgba(244, 67, 54, 0.1); }
-.log-faint { color: #9E9E9E; text-align: center; font-style: italic; background: rgba(255,255,255,0.1); }
-
-.log-list-enter-active, .log-list-leave-active {
-  transition: all 0.5s ease;
-}
-.log-list-enter-from {
-  opacity: 0;
-  transform: translateY(-20px);
-}
-
-.battle-result {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
-  padding: 3rem;
-  text-align: center;
-  max-width: 500px;
-  margin: 0 auto;
-}
-
+.battle-log p { margin: 0.5rem 0; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.log-info { color: #ffcb05; font-weight: bold; }
+.log-player { color: #4CAF50; }
+.log-enemy { color: #e74c3c; }
+.log-faint { color: #e74c3c; font-weight: bold; font-style: italic; }
+.log-list-enter-active, .log-list-leave-active { transition: all 0.5s ease; }
+.log-list-enter-from { opacity: 0; transform: translateY(-20px); }
+.log-list-leave-to { opacity: 0; transform: translateY(20px); }
+.battle-result { background: rgba(255, 255, 255, 0.95); border-radius: 15px; padding: 3rem; text-align: center; max-width: 500px; margin: 4rem auto; }
 .win-text { color: #4CAF50; font-size: 2rem; }
 .lose-text { color: #F44336; font-size: 2rem; }
+@media (max-width: 768px) {
+  .arena-layout { flex-direction: column; }
+  .vs-badge { margin: 1rem 0; }
+}
 </style>

@@ -154,10 +154,12 @@ const canAttack = ref(true);
 let socket = null;
 
 function getPokemonId(p) {
+  if (!p) return null;
   return p.pokemonid || p.pokemonId;
 }
 
 function getPokemonName(p) {
+  if (!p) return 'Desconocido';
   return p.pokemonname || p.pokemonName;
 }
 
@@ -188,6 +190,7 @@ onMounted(async () => {
     if (data.battleId !== battleId.value) return;
 
     if (authStore.user && data.attackerId !== authStore.user.id) {
+       if (!currentPokemon1.value || !currentPokemon2.value) return;
        currentPokemon1.value.hp = Math.max(0, currentPokemon1.value.hp - data.damage);
        battleLogs.value.unshift({ id: logIdCounter++, text: `El ${getPokemonName(currentPokemon2.value)} enemigo usa ${data.move} y causa ${data.damage} de daño a ${getPokemonName(currentPokemon1.value)}.`, type: 'log-enemy' });
        playerHit.value = true;
@@ -299,6 +302,8 @@ async function startBattle() {
 
 function attack(moveName) {
   if (!canAttack.value || !isBattling.value) return;
+  if (!currentPokemon1.value || !currentPokemon2.value) return;
+  
   const damage = moveName === 'Ataque Fuerte' 
     ? Math.floor(Math.random() * 20) + 15 
     : Math.floor(Math.random() * 10) + 5;

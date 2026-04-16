@@ -1,4 +1,4 @@
-﻿
+
 <template>
   <div class="battle-container">
     <div class="battle-header">
@@ -118,17 +118,19 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '../stores/userStore.js';
+import { useAuthStore } from '../stores/authStore.js';
 import { friendsService } from '../services/api.js';
 import { io } from 'socket.io-client';
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
+const authStore = useAuthStore();
 
 const battleIdParam = route.params.battleId;
 const friendIdParam = route.params.friendId;
-const routeId = battleIdParam || friendIdParam;
-const friendName = ref("");
+
+const friendName = ref('');
 const selectedTeam = ref(null);
 const loading = ref(false);
 
@@ -165,39 +167,12 @@ onMounted(async () => {
   await userStore.fetchFriends();
 
   if (friendIdParam) {
-    const friend = userStore.friends.find((f) => f.id === parseInt(friendIdParam));
-    if (friend) {
-      friendName.value = friend.username;
-    }
-  }
-
-  if (battleIdParam) {
-    try {
-      loading.value = true;
-      const res = await friendsService.getBattle(battleIdParam);
-      const battle = res.data;
-      battleId.value = battle.battleId;
-      
-      const isInitiator = battle.userId === userStore.user.id;
-      const myTeam = isInitiator ? battle.teams.team1 : battle.teams.team2;
-      const oppTeam = isInitiator ? battle.teams.team2 : battle.teams.team1;
-      
-      team1Active.value = myTeam.pokemon.map(p => ({ ...p, hp: 100 }));
-      team2Active.value = oppTeam.pokemon.map(p => ({ ...p, hp: 100 }));
-      
-      currentPokemon1.value = team1Active.value.shift();
-      currentPokemon2.value = team2Active.value.shift();
-      
-      selectedTeam.value = myTeam;
-      isBattling.value = true;
-      battleLogs.value = [{ id: logIdCounter++, text: "¡Te has unido a la batalla!", type: 'log-info' }];
-      
-      socket.emit('join-battle', { battleId: battleId.value });
-    } catch (err) {
-      console.error(err);
-      alert("No se pudo unir a la batalla");
-    } finally {
-      loading.value = false;
+    const friendId = parseInt(friendIdParam);
+    if (!isNaN(friendId)) {
+      const friend = userStore.friends.find((f) => f.id === friendId);
+      if (friend) {
+        friendName.value = friend.username;
+      }
     }
   }
 
@@ -213,19 +188,49 @@ onMounted(async () => {
   socket.on('attack', (data) => {
     if (data.battleId !== battleId.value) return;
 
-    if (data.attackerId !== userStore.user.id) {
+    if (authStore.user && data.attackerId !== authStore.user.id) {
        currentPokemon1.value.hp = Math.max(0, currentPokemon1.value.hp - data.damage);
-       battleLogs.value.unshift({ id: logIdCounter++, text: `El ${getPokemonName(currentPokemon2.value)} enemigo usa ${data.move} y causa ${data.damage} de daño a ${getPokemonName(currentPokemon1.value)}.`, type: 'log-enemy' });
+       battleLogs.value.unshift({ id: logIdCounter++, text: El  enemigo usa  y causa  de da�o a ., type: 'log-enemy' });
        playerHit.value = true;
        setTimeout(() => playerHit.value = false, 500);
        checkFaint();
     }
   });
+
+  if (battleIdParam) {
+    try {
+      loading.value = true;
+      const res = await friendsService.getBattle(battleIdParam);
+      const battle = res.data;
+      battleId.value = battle.battleId;
+      
+      const isInitiator = authStore.user && battle.userId === authStore.user.id;
+      const myTeam = isInitiator ? battle.teams.team1 : battle.teams.team2;
+      const oppTeam = isInitiator ? battle.teams.team2 : battle.teams.team1;
+      
+      team1Active.value = myTeam.pokemon.map(p => ({ ...p, hp: 100 }));
+      team2Active.value = oppTeam.pokemon.map(p => ({ ...p, hp: 100 }));
+      
+      currentPokemon1.value = team1Active.value.shift();
+      currentPokemon2.value = team2Active.value.shift();
+      
+      selectedTeam.value = myTeam;
+      isBattling.value = true;
+      battleLogs.value = [{ id: logIdCounter++, text: '�Te has unido a la batalla!', type: 'log-info' }];
+      
+      socket.emit('join-battle', { battleId: battleId.value });
+    } catch (err) {
+      console.error(err);
+      alert('No se pudo unir a la batalla. Verifica que la URL sea correcta o la batalla exista.');
+    } finally {
+      loading.value = false;
+    }
+  }
 });
 
 onUnmounted(() => {
   if (socket) socket.disconnect();
-})
+});
 
 function selectTeam(team) {
   selectedTeam.value = team;
@@ -233,7 +238,7 @@ function selectTeam(team) {
 
 function getPokemonImage(id) {
   if(!id) return 'https://via.placeholder.com/150';
-  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+  return https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/.png;
 }
 
 function healthStyle(hp) {
@@ -248,49 +253,46 @@ function healthClass(hp) {
 
 async function startBattle() {
   if (!selectedTeam.value) {
-    alert("Debes seleccionar un equipo");
+    alert('Debes seleccionar un equipo');
     return;
   }
   if (!selectedTeam.value.pokemon || selectedTeam.value.pokemon.length === 0) {
-    alert("Tu equipo está vacío");
+    alert('Tu equipo est� vac�o');
     return;
   }
 
   loading.value = true;
   try {
-      const friendId = friendIdParam ? parseInt(friendIdParam) : null;
+    const friendId = friendIdParam ? parseInt(friendIdParam) : null;
 
-      if (!friendId) {
-        alert("Error: Faltan datos del amigo para iniciar la batalla.");
-        return;
-      }
+    if (!friendId) {
+      alert('Error: Faltan datos del amigo para iniciar la batalla.');
+      loading.value = false;
+      return;
+    }
 
-      const res = await friendsService.startBattle(friendId, selectedTeam.value.id, null);
-      battleId.value = res.data.battleId;
-      
-      const myTeam = res.data.teams.team1;
-      const oppTeam = res.data.teams.team2;
-      
-      team1Active.value = myTeam.pokemon.map(p => ({ ...p, hp: 100 }));
-      team2Active.value = oppTeam.pokemon.map(p => ({ ...p, hp: 100 }));
-      
-      if (team2Active.value.length === 0) {
-         alert("El oponente no tiene Pokémon en su equipo");
-         loading.value = false;
-         return;
-      }
-      
-      currentPokemon1.value = team1Active.value.shift();
-      currentPokemon2.value = team2Active.value.shift();
-      
-      socket.emit('join-battle', { battleId: res.data.battleId });
-      
-      isBattling.value = true;
-      battleLogs.value = [{ id: logIdCounter++, text: "¡Comienza la batalla! Esperando que el oponente se una.", type: 'log-info' }];
-      
-    } catch (error) {
+    const res = await friendsService.startBattle(friendId, selectedTeam.value.id, null);
+    battleId.value = res.data.battleId;
+    team1Active.value = res.data.teams.team1.pokemon.map(p => ({ ...p, hp: 100 }));
+    team2Active.value = res.data.teams.team2.pokemon.map(p => ({ ...p, hp: 100 }));
+
+    if (team2Active.value.length === 0) {
+       alert('El oponente no tiene Pok�mon en su equipo');
+       loading.value = false;
+       return;
+    }
+
+    currentPokemon1.value = team1Active.value.shift();
+    currentPokemon2.value = team2Active.value.shift();
+    
+    isBattling.value = true;
+    battleLogs.value = [{ id: logIdCounter++, text: '�Comienza la batalla!', type: 'log-info' }];
+    
+    socket.emit('join-battle', { battleId: battleId.value });
+    
+  } catch (error) {
     console.error(error);
-    alert("Error iniciando batalla: " + (error.response?.data?.error || error.message));
+    alert('Error iniciando batalla: ' + (error.response?.data?.error || error.message));
   } finally {
     loading.value = false;
   }
@@ -305,14 +307,14 @@ function attack(moveName) {
   const move = moveName;
 
   currentPokemon2.value.hp = Math.max(0, currentPokemon2.value.hp - damage);
-  battleLogs.value.unshift({ id: logIdCounter++, text: `${getPokemonName(currentPokemon1.value)} usa ${move} y causa ${damage} de daño a ${getPokemonName(currentPokemon2.value)}.`, type: 'log-player' });
+  battleLogs.value.unshift({ id: logIdCounter++, text: ${getPokemonName(currentPokemon1.value)} usa  y causa  de da�o a ., type: 'log-player' });
   enemyHit.value = true;
   setTimeout(() => enemyHit.value = false, 500);
 
-  if (socket && battleId.value) {
+  if (socket && battleId.value && authStore.user) {
     socket.emit('attack', {
       battleId: battleId.value,
-      attackerId: userStore.user.id,
+      attackerId: authStore.user.id,
       damage,
       move
     });
@@ -323,21 +325,21 @@ function attack(moveName) {
 
 function checkFaint() {
   if (currentPokemon1.value.hp <= 0) {
-    battleLogs.value.unshift({ id: logIdCounter++, text: `¡Tu ${getPokemonName(currentPokemon1.value)} se ha debilitado! Pierdes una carta.`, type: 'log-faint' });
+    battleLogs.value.unshift({ id: logIdCounter++, text: �Tu  se ha debilitado! Pierdes una carta., type: 'log-faint' });
     if (team1Active.value.length > 0) {
       setTimeout(() => {
         currentPokemon1.value = team1Active.value.shift();
-        battleLogs.value.unshift({ id: logIdCounter++, text: `¡Adelante, ${getPokemonName(currentPokemon1.value)}!`, type: 'log-info' });
+        battleLogs.value.unshift({ id: logIdCounter++, text: �Adelante, !, type: 'log-info' });
       }, 1500);
     } else {
       setTimeout(() => finishBattle(false), 1500);
     }
   } else if (currentPokemon2.value.hp <= 0) {
-    battleLogs.value.unshift({ id: logIdCounter++, text: `¡El ${getPokemonName(currentPokemon2.value)} enemigo se ha debilitado! Su carta se esfuma.`, type: 'log-faint' });
+    battleLogs.value.unshift({ id: logIdCounter++, text: �El  enemigo se ha debilitado! Su carta se esfuma., type: 'log-faint' });
     if (team2Active.value.length > 0) {
       setTimeout(() => {
         currentPokemon2.value = team2Active.value.shift();
-        battleLogs.value.unshift({ id: logIdCounter++, text: `El oponente envía a ${getPokemonName(currentPokemon2.value)}.`, type: 'log-info' });
+        battleLogs.value.unshift({ id: logIdCounter++, text: El oponente env�a a ., type: 'log-info' });
       }, 1500);
     } else {
       setTimeout(() => finishBattle(true), 1500);
@@ -350,13 +352,13 @@ async function finishBattle(win) {
   battleFinished.value = true;
   isWinner.value = win;
 
-  const winnerUserId = win ? userStore.user.id : parseInt(routeId);
+  const winnerUserId = win ? (authStore.user ? authStore.user.id : null) : (friendIdParam ? parseInt(friendIdParam) : null);
   
-  if (!isNaN(winnerUserId)) {
+  if (winnerUserId !== null && !isNaN(winnerUserId)) {
     try {
       await friendsService.calculateBattleResult(battleId.value, winnerUserId);
     } catch (error) {
-      console.error("Error guardando el resultado:", error);
+      console.error('Error guardando el resultado:', error);
     }
   }
 }
@@ -364,6 +366,7 @@ async function finishBattle(win) {
 function resetBattle() {
   battleFinished.value = false;
   selectedTeam.value = null;
+  router.push('/pokedex');
 }
 </script>
 

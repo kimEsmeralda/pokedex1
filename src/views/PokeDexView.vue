@@ -142,8 +142,16 @@
             <div
               v-for="fav in userStore.favorites"
               :key="fav.id"
-              class="pokemon-card"
+              class="pokemon-card relative"
             >
+              <!-- Etiqueta de quién añadió -->
+              <div 
+                v-if="fav.addedBy" 
+                style="position:absolute; top:-10px; right:10px; background:#4CAF50; color:white; padding:4px 8px; border-radius:12px; font-size:0.8rem; box-shadow:0 2px 4px rgba(0,0,0,0.2);"
+              >
+                {{ fav.addedBy === authStore.user?.username ? 'Tú' : fav.addedBy }}
+              </div>
+
               <div class="pokemon-image">
                 <img
                   :src="getFavoriteImage(fav)"
@@ -153,6 +161,7 @@
               </div>
               <h3 class="pokemon-name">{{ getNameFrom(fav) }}</h3>
               <button
+                v-if="fav.userId === authStore.user?.id || (fav.id && fav.id.toString().startsWith('temp-'))"
                 @click="removeFavoriteUI(fav)"
                 class="btn-remove"
               >
@@ -794,10 +803,10 @@ const filteredAddList = computed(() => {
 function isFavorite(pokemon) {
   const id = getIdFrom(pokemon);
   if (!id) return false;
-  return userStore.favorites.some((f) => Number(f.pokemonId || f.pokemonid) === Number(id));
-}
-
-async function toggleFavorite(pokemon) {
+    return userStore.favorites.some((f) => 
+      Number(f.pokemonId || f.pokemonid) === Number(id) && 
+      f.userId === authStore.user?.id
+    );
   const resolved = normalizePokemon(pokemon);
   const id = resolved.id;
   let name = resolved.name;

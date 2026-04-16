@@ -1,6 +1,7 @@
 ﻿import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import api, { teamsService, favoritesService, friendsService } from '../services/api.js';
+import { useAuthStore } from './authStore.js';
 
 export const useUserStore = defineStore('user', () => {
   const favorites = ref([]);
@@ -13,10 +14,18 @@ export const useUserStore = defineStore('user', () => {
       if (!pokemonId) throw new Error('pokemonId requerido');
       if (!pokemonName) pokemonName = 'Unknown';
       
+      const authStore = useAuthStore();
+
       // Actualización optimista (para que se vea al instante incluso sin internet)
-      const exists = favorites.value.some(f => (f.pokemonId || f.pokemonid) === pokemonId);
+      const exists = favorites.value.some(f => (f.pokemonId || f.pokemonid) === pokemonId && f.userId === authStore.user?.id);
       if (!exists) {
-        favorites.value.push({ pokemonId: pokemonId, pokemonName: pokemonName, id: 'temp-' + Date.now() });
+        favorites.value.unshift({ 
+          pokemonId: pokemonId, 
+          pokemonName: pokemonName, 
+          id: 'temp-' + Date.now(),
+          userId: authStore.user?.id,
+          addedBy: authStore.user?.username
+        });
       }
 
       const res = await favoritesService.add(pokemonId, pokemonName);
@@ -48,8 +57,10 @@ export const useUserStore = defineStore('user', () => {
         throw new Error('pokemonId requerido para eliminar favorito');
       }
 
+      const authStore = useAuthStore();
+
       // Actualización optimista
-      favorites.value = favorites.value.filter(f => (f.pokemonId || f.pokemonid) !== pid);
+      favorites.value = favorites.value.filter(f => !((f.pokemonId || f.pokemonid) === pid && f.userId === authStore.user?.id));
 
       const res = await favoritesService.remove(pid);
       if (res && res.data && res.data.offlineQueued) {

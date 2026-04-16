@@ -803,10 +803,13 @@ const filteredAddList = computed(() => {
 function isFavorite(pokemon) {
   const id = getIdFrom(pokemon);
   if (!id) return false;
-    return userStore.favorites.some((f) => 
-      Number(f.pokemonId || f.pokemonid) === Number(id) && 
-      f.userId === authStore.user?.id
-    );
+  return userStore.favorites.some((f) => 
+    Number(f.pokemonId || f.pokemonid) === Number(id) && 
+    f.userId === authStore.user?.id
+  );
+}
+
+async function toggleFavorite(pokemon) {
   const resolved = normalizePokemon(pokemon);
   const id = resolved.id;
   let name = resolved.name;

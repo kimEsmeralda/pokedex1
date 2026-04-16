@@ -165,10 +165,17 @@ async function processQueue() {
       }
 
       const response = await fetch(entry.url, options);
-      // Remove it from queue if we got ANY response from the server (even a 400 error) so it doesn't get stuck forever
-      if (response) {
+      
+      // Si la respuesta fue exitosa (200-299)
+      if (response.ok) {
         await deleteRequest(entry.id);
         count++;
+      } else {
+        // Si el backend lo rechaza porque faltan datos (ej: viejo formato) lo borramos para que no se atore la cola
+        if (response.status >= 400 && response.status < 500) {
+          await deleteRequest(entry.id);
+        }
+        console.error('Sync request failed with status:', response.status);
       }
     } catch (e) {
       // network still failing; keep the entry

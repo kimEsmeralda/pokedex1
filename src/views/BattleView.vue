@@ -323,7 +323,7 @@ function attack(moveName) {
 }
 
 function checkFaint() {
-  if (currentPokemon1.value.hp <= 0) {
+  if (currentPokemon1.value && currentPokemon1.value.hp <= 0) {
     battleLogs.value.unshift({ id: logIdCounter++, text: `¡Tu ${getPokemonName(currentPokemon1.value)} se ha debilitado! Pierdes una carta.`, type: 'log-faint' });
     if (team1Active.value.length > 0) {
       setTimeout(() => {
@@ -333,7 +333,9 @@ function checkFaint() {
     } else {
       setTimeout(() => finishBattle(false), 1500);
     }
-  } else if (currentPokemon2.value.hp <= 0) {
+  }
+  
+  if (currentPokemon2.value && currentPokemon2.value.hp <= 0) {
     battleLogs.value.unshift({ id: logIdCounter++, text: `¡El ${getPokemonName(currentPokemon2.value)} enemigo se ha debilitado! Su carta se esfuma.`, type: 'log-faint' });
     if (team2Active.value.length > 0) {
       setTimeout(() => {

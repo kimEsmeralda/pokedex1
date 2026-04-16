@@ -27,7 +27,7 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/battle/:friendId',
+    path: '/battle/:id',
     name: 'Battle',
     component: BattleView,
     meta: { requiresAuth: true }

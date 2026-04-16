@@ -136,15 +136,22 @@ api.interceptors.response.use(
                     // Normalizar headers a objeto simple
           let headers = {};
           if (config.headers) {
-            // Fix: Axios headers might be generic objects or AxiosHeaders
-            Object.keys(config.headers).forEach(key => {
-              headers[key] = config.headers[key];
-            });
+            if (typeof config.headers.toJSON === 'function') {
+              headers = config.headers.toJSON();
+            } else {
+              Object.keys(config.headers).forEach(key => {
+                headers[key] = config.headers[key];
+              });
+            }
+          }
+          
+          if (!headers['Content-Type'] && !headers['content-type'] && config.data) {
+            headers['Content-Type'] = 'application/json';
           }
           
           // Re-inject token as fallback if it didn't get serialized
           const token = localStorage.getItem('token');
-          if (token && !headers['Authorization']) {
+          if (token && !headers['Authorization'] && !headers['authorization']) {
             headers['Authorization'] = 'Bearer ' + token;
           }
 

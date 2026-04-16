@@ -903,7 +903,7 @@ function removeFriend(friendId) {
 }
 
 function goToBattle(friend) {
-  router.push(`/battle/${friend.id}`);
+  router.push(`/battle/new/${friend.id}`);
 }
 
 function getFavoriteImage(fav) {

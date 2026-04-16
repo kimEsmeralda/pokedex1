@@ -125,8 +125,9 @@ const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 
-const routeId = route.params.id; 
-
+const battleIdParam = route.params.battleId;
+const friendIdParam = route.params.friendId;
+const routeId = battleIdParam || friendIdParam;
 const friendName = ref("");
 const selectedTeam = ref(null);
 const loading = ref(false);
@@ -136,9 +137,7 @@ const battleFinished = ref(false);
 const isWinner = ref(false);
 const battleId = ref(null);
 
-const isJoining = computed(() => {
-  return routeId && isNaN(parseInt(routeId)); 
-});
+const isJoining = computed(() => !!battleIdParam);
 
 const team1Active = ref([]);
 const team2Active = ref([]);
@@ -165,14 +164,44 @@ onMounted(async () => {
   await userStore.fetchTeams();
   await userStore.fetchFriends();
 
-  if (routeId && !isNaN(parseInt(routeId))) {
-    const friend = userStore.friends.find((f) => f.id === parseInt(routeId));
+  if (friendIdParam) {
+    const friend = userStore.friends.find((f) => f.id === parseInt(friendIdParam));
     if (friend) {
       friendName.value = friend.username;
     }
   }
 
-  const backendUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'https://be-production-1e0f.up.railway.app';
+  if (battleIdParam) {
+    try {
+      loading.value = true;
+      const res = await friendsService.getBattle(battleIdParam);
+      const battle = res.data;
+      battleId.value = battle.battleId;
+      
+      const isInitiator = battle.userId === userStore.user.id;
+      const myTeam = isInitiator ? battle.teams.team1 : battle.teams.team2;
+      const oppTeam = isInitiator ? battle.teams.team2 : battle.teams.team1;
+      
+      team1Active.value = myTeam.pokemon.map(p => ({ ...p, hp: 100 }));
+      team2Active.value = oppTeam.pokemon.map(p => ({ ...p, hp: 100 }));
+      
+      currentPokemon1.value = team1Active.value.shift();
+      currentPokemon2.value = team2Active.value.shift();
+      
+      selectedTeam.value = myTeam;
+      isBattling.value = true;
+      battleLogs.value = [{ id: logIdCounter++, text: "¡Te has unido a la batalla!", type: 'log-info' }];
+      
+      socket.emit('join-battle', { battleId: battleId.value });
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo unir a la batalla");
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  const backendUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5432';
   socket = io(backendUrl, {
     auth: { token: localStorage.getItem('token') }
   });
@@ -229,34 +258,37 @@ async function startBattle() {
 
   loading.value = true;
   try {
-    const friendId = isNaN(parseInt(routeId)) ? null : parseInt(routeId);
+      const friendId = friendIdParam ? parseInt(friendIdParam) : null;
 
-    if (friendId) {
+      if (!friendId) {
+        alert("Error: Faltan datos del amigo para iniciar la batalla.");
+        return;
+      }
+
       const res = await friendsService.startBattle(friendId, selectedTeam.value.id, null);
       battleId.value = res.data.battleId;
-      team1Active.value = res.data.teams.team1.pokemon.map(p => ({ ...p, hp: 100 }));
-      team2Active.value = res.data.teams.team2.pokemon.map(p => ({ ...p, hp: 100 }));
-    } else {
-      battleId.value = routeId;
-      const res = await friendsService.startBattle(null, selectedTeam.value.id, selectedTeam.value.id); 
-      team1Active.value = res.data.teams.team1.pokemon.map(p => ({ ...p, hp: 100 }));
-      team2Active.value = res.data.teams.team2.pokemon.map(p => ({ ...p, hp: 100 }));
-    }
-
-    if (team2Active.value.length === 0) {
-       alert("El oponente no tiene Pokémon en su equipo");
-       return;
-    }
-
-    currentPokemon1.value = team1Active.value.shift();
-    currentPokemon2.value = team2Active.value.shift();
-    
-    isBattling.value = true;
-    battleLogs.value = [{ id: logIdCounter++, text: "¡Comienza la batalla!", type: 'log-info' }];
-    
-    socket.emit('join-battle', { battleId: battleId.value });
-    
-  } catch (error) {
+      
+      const myTeam = res.data.teams.team1;
+      const oppTeam = res.data.teams.team2;
+      
+      team1Active.value = myTeam.pokemon.map(p => ({ ...p, hp: 100 }));
+      team2Active.value = oppTeam.pokemon.map(p => ({ ...p, hp: 100 }));
+      
+      if (team2Active.value.length === 0) {
+         alert("El oponente no tiene Pokémon en su equipo");
+         loading.value = false;
+         return;
+      }
+      
+      currentPokemon1.value = team1Active.value.shift();
+      currentPokemon2.value = team2Active.value.shift();
+      
+      socket.emit('join-battle', { battleId: res.data.battleId });
+      
+      isBattling.value = true;
+      battleLogs.value = [{ id: logIdCounter++, text: "¡Comienza la batalla! Esperando que el oponente se una.", type: 'log-info' }];
+      
+    } catch (error) {
     console.error(error);
     alert("Error iniciando batalla: " + (error.response?.data?.error || error.message));
   } finally {

@@ -150,6 +150,9 @@ async function deleteRequest(id) {
 
 async function processQueue() {
   const entries = await getAllRequests();
+  if (entries.length === 0) return;
+
+  let count = 0;
   for (const entry of entries) {
     try {
       const headers = entry.headers || {};
@@ -165,10 +168,22 @@ async function processQueue() {
       // Remove it from queue if we got ANY response from the server (even a 400 error) so it doesn't get stuck forever
       if (response) {
         await deleteRequest(entry.id);
+        count++;
       }
     } catch (e) {
       // network still failing; keep the entry
     }
+  }
+
+  if (count > 0 && self.registration && self.registration.showNotification) {
+    self.registration.showNotification("Sincronización Completada", {
+      body: `Se enviaron ${count} actualizaciones que hiciste sin conexión a la base de datos.`,
+      icon: "/cubopoke.svg"
+    });
+    // Notificamos a la aplicación cliente por si desea recargar los datos
+    self.clients.matchAll().then((clients) => {
+      clients.forEach((c) => c.postMessage({ action: 'queueProcessed', count }));
+    });
   }
 }
 

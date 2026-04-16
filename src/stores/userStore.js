@@ -68,7 +68,7 @@ export const useUserStore = defineStore('user', () => {
       favorites.value = response.data || [];
     } catch (error) {
       console.error('Error fetching favorites:', error);
-      favorites.value = [];
+      // Removed the clearing of offline favorites
     }
   }
 

@@ -59,3 +59,17 @@ window.addEventListener('online', async () => {
         }
     }
 });
+
+// Escuchar mensajes del Service Worker
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', async (event) => {
+        if (event.data && event.data.action === 'queueProcessed') {
+            console.log(`Se sincronizaron ${event.data.count} elementos.`);
+            // Si quieres que el estado de los favoritos se actualice dinámicamente cuando vuelve la luz
+            const { useUserStore } = await import('./stores/userStore.js');
+            const userStore = useUserStore();
+            userStore.fetchFavorites();
+            userStore.fetchTeams();
+        }
+    });
+}

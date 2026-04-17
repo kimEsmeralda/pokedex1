@@ -2,14 +2,15 @@
 import { saveRequest } from '../utils/offlineQueue.js';
 
 // Usamos la variable de entorno y como respaldo la URL de producciÃ³n directamente
-let API_URL = import.meta.env.VITE_API_URL || 'https://be-production-1e0f.up.railway.app/api';
-if (API_URL.endsWith('/')) {
-  API_URL = API_URL.slice(0, -1);
+let rawApiUrl = (import.meta.env.VITE_API_URL || 'https://be-production-1e0f.up.railway.app/api').trim();
+if (rawApiUrl.endsWith('/')) {
+  rawApiUrl = rawApiUrl.slice(0, -1);
 }
-if (!API_URL.endsWith('/api')) {
+if (!rawApiUrl.endsWith('/api')) {
   // Solo se agrega si el usuario no lo puso en la variable de entorno
-  API_URL += '/api';
+  rawApiUrl += '/api';
 }
+const API_URL = rawApiUrl;
 
 const api = axios.create({
   baseURL: API_URL
@@ -122,15 +123,22 @@ api.interceptors.response.use(
     const config = error.config;
     const isNetworkError = !navigator.onLine || error.message === 'Network Error' || error.code === 'ERR_NETWORK';
     if (config && isNetworkError) {
-      const method = (config.method || '').toLowerCase();
+          const method = (config.method || '').toLowerCase();
       if (['post', 'put', 'delete', 'patch'].includes(method)) {
         try {
-          // Construir URL absoluta si es necesario
-          let fullUrl = config.url;
+          // Asegurar que la URL sea absoluta y no tenga dobles slashes
+          let fullUrl = '';
           try {
-            fullUrl = new URL(config.url, config.baseURL || API_URL).toString();
-          } catch (e) {
-            // keep config.url
+            fullUrl = api.getUri ? api.getUri(config) : config.url;
+          } catch(e) {
+            fullUrl = config.url || '';
+          }
+          if (!fullUrl.startsWith('http')) {
+             let base = config.baseURL || API_URL || window.location.origin;
+             if (base.endsWith('/')) base = base.slice(0, -1);
+             let path = fullUrl;
+             while(path.startsWith('/')) path = path.slice(1);
+             fullUrl = base + '/' + path;
           }
 
                     // Normalizar headers a objeto simple
